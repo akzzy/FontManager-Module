@@ -17,25 +17,25 @@ Bl='\e[47;100m'      # BLACK TEXT
 C='\e[100;96m'       # CYAN TEXT
 W='\e[100m'          # WHITE TEXT
 BGBL='\e[1;30;100m'  # Background W Text Bl
-N='\e[0m'            # How to use (example): echo "${C}example${N}"
+N='\e[0m'            # How to use (example): echo -e "${SPACING}${C}example${N}"
 BLINK='\e[100;30;5m' # Blinking text
 loadBar=' '          # Load UI
 div="${Bl} $(printf '%*s' $(($COLUMNS - 2)) '' | tr " " "=") ${N}"
-spacing="$(printf '%*s' $(((COLUMNS - 49) * 50 / 100)) '' | tr " " " ")"
-alias curl='/data/adb/modules/fontrevival/tools/curl'
+spacing="${Bl} "
 # Print module banner
 do_banner() {
   printf %b '\e[100m' '\e[8]' '\e[H\e[J'
-  echo "${spacing}   ____            __                     "
-  echo "${spacing}  / __/___   ___  / /_                   "
-  echo "${spacing} / _/ / _ \ / _ \/ __/                    "
-  echo "${spacing}/_/   \___//_//_/\__/                     "
-  echo "${spacing}   __  ___                                "
-  echo "${spacing}  /  |/  /___ _ ___  ___ _ ___ _ ___  ____"
-  echo "${spacing} / /|_/ // _ \`// _ \/ _ \`// _ \`// -_)/ __/"
-  echo "${spacing}/_/  /_/ \_,_//_//_/\_,_/ \_, / \__//_/ "
-  echo "${spacing}                         /___/            "
-  echo -e "${spacing}An Androidacy app. Visit us @ androidacy.com${N}"
+  echo -e "${div}"
+  echo -e "${spacing}   ____            __                     ${N}"
+  echo -e "${spacing}  / __/___   ___  / /_                    ${N}"
+  echo -e "${spacing} / _/ / _ \ / _ \/ __/                    ${N}"
+  echo -e "${spacing}/_/   \___//_//_/\__/                     ${N}"
+  echo -e "${spacing}   __  ___                                ${N}"
+  echo -e "${spacing}  /  |/  /___ _ ___  ___ _ ___ _ ___  ____${N}"
+  echo -e "${spacing} / /|_/ // _ \`// _ \/ _ \`// _ \`// -_)/ __/${N}"
+  echo -e "${spacing}/_/  /_/ \_,_//_//_/\_,_/ \_, / \__//_/   ${N}"
+  echo -e "${spacing}                         /___/            ${N}"
+  
   echo -e "$div"
 }
 # Handle user quit
@@ -59,7 +59,7 @@ e_spinner() {
   while [ -d /proc/$PID ]; do
     h=$(((h + 6) % 90))
     local letters=$(echo "$@" | wc -c)
-    local animnum=16
+    local animnum=6
     local spacenum=$((COLUMNS - letters - animnum))
     local spaces="$(printf '%*s' $spacenum '' | tr " " " ")"
     sleep 0.13
@@ -130,7 +130,7 @@ fi
 _bbname="$($_bb | head -n1 | awk '{print $1,$2}')"
 BBok=true
 if [ "$_bbname" == "" ]; then
-  _bbname="${R}BusyBox not found!${N}"
+  echo "${R}Magisk's BusyBox was not found!${N}"
   it_failed
 fi
 
@@ -347,7 +347,7 @@ mod_head() {
 }
 
 # Block running on less than oreo
-MINAPI=26
+MINAPI=24
 API=$(resetprop ro.build.version.sdk)
 [ -z $MINAPI ] || { [ $API -lt $MINAPI ] && echo "! Your system API of $API is less than the minimum api of $MINAPI! Aborting!" && exit 1; }
 
@@ -363,7 +363,7 @@ setup_logger() {
   LOGFILE=$EXT_DATA/logs/script.log
   export LOGFILE
   {
-    echo "Module: FontManager v5.1.6"
+    echo "Module: FontManager v5.1.7"
     echo "Device: $BRAND $MODEL ($DEVICE)"
     echo "ROM: $ROM, sdk$API"
   } >$LOGFILE

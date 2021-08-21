@@ -39,7 +39,7 @@ shopt -s expand_aliases
 . /data/adb/modules/fontrevival/tools/utils
 . /data/adb/modules/fontrevival/tools/apiClient
 log 'INFO' "Welcome to Font Manager"
-initClient 'fm' '5.1.6'
+initClient 'fm' '5.1.7'
 # shellcheck disable=SC2154
 if test -n "${ANDROID_SOCKET_adbd}"; then
     log 'ERROR' "Cannot run via adb"
@@ -70,7 +70,7 @@ font_select() {
     print_list() {
         do_banner
         TOTALLINES=$(wc -l /sdcard/FontManager/lists/fonts.list | awk '{ print $1 }')
-        USABlELINES=$((LINES - 17))
+        USABlELINES=$((LINES - 15))
         LINESREAD=$((LINESTART + USABlELINES))
         if test $LINESTART -ge "$TOTALLINES"; then
             LINESTART=1
@@ -78,8 +78,8 @@ font_select() {
         fi
         awk '{printf "\033[47;100m%d.\t%s\n", NR, $0}' <"$MODDIR"/lists/fonts.list | sed -n ${LINESTART},${LINESREAD}p
         echo -e "$div"
-        echo -e "${Bl} x: main menu, q: quit, enter: more, <number>: select${N}"
-        echo -en "${Bl} Your choice: "
+        echo -e "${Bl} x: main menu, q: quit, enter: more, <number>: select"
+        echo -en " Your choice: "
         unset a
         read -r a
         if test "$a" == ""; then
@@ -166,7 +166,7 @@ emoji_select() {
     print_list() {
         do_banner
         TOTALLINES=$(wc -l /sdcard/FontManager/lists/emojis.list | awk '{ print $1 }')
-        USABlELINES=$((LINES - 17))
+        USABlELINES=$((LINES - 15))
         LINESREAD=$((LINESTART + USABlELINES))
         if test $LINESTART -ge "$TOTALLINES"; then
             LINESTART=1
@@ -174,8 +174,8 @@ emoji_select() {
         fi
         awk '{printf "\033[47;100m%d.\t%s\n", NR, $0}' <"$MODDIR"/lists/emojis.list | sed -n ${LINESTART},${LINESREAD}p
         echo -e "$div"
-        echo -e "${Bl} x: main menu, q: quit, enter: more, <number>: select${N}"
-        echo -en "${Bl} Your choice: "
+        echo -e "${Bl} x: main menu, q: quit, enter: more, <number>: select"
+        echo -en " Your choice: "
         unset a
         read -r a
         if test "$a" == ""; then

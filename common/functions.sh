@@ -21,7 +21,6 @@ ui_print "ⓘ Preparing installer"
 unzip -o "$ZIPFILE" -x 'META-INF/*' 'common/functions.sh' -d $MODPATH >&2
 unzip $MODPATH/common/tools/tools.zip -d $MODPATH/common/tools/ >&2 && rm -fr $MODPATH/common/tools/tools.zip >&2
 chmod -R 755 "$MODPATH"/common/tools/
-alias curl="$MODPATH/common/tools/curl-$ARCH"
 [ -f "$MODPATH/common/addon.tar.xz" ] && tar -xf $MODPATH/common/addon.tar.xz -C $MODPATH/common 2>/dev/null
 
 # All error catching attempts failed, let's bail out.
@@ -287,7 +286,7 @@ prop_process() {
 }
 
 # Check for min/max api version
-if test $API -lt 26; then
+if test $API -lt 24; then
   abort "! Your system API of $API is less than the minimum api of 26 (Oreo)! Aborting!"
 fi
 

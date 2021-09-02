@@ -1,6 +1,16 @@
 # shellcheck shell=ash
 # shellcheck disable=SC2169,SC2121,SC2154
 ui_print "ⓘ Welcome to Font Manager!"
+updateChecker 'self'
+newVersion=$response
+if test "$(grep 'versionCode=' "$MODPATJ"/module.prop | sed 's/versionCode=//')" -ne "$newVersion"; then
+	echo -e "${Bl} Module update found! Please download the latest update manually, and flash in magisk manager.${N}"
+	echo -e "${Bl} Attempting to launch downloads page...${N}"
+	sleep 2
+	am start -a android.intent.action.VIEW -d "https://www.androidacy.com/downloads/?f=fontmanager%20uppdate" &>/dev/null
+	echo -e "${Bl} Exiting now.!${N}"
+	exit 1
+fi
 xml_s() {
 	ui_print "ⓘ Registering our fonts"
 	SXML="$MODPATH"/system/etc/fonts.xml
@@ -132,4 +142,4 @@ ui_print "⚠ Please make sure not to have any other font changing modules insta
 ui_print "⚠ Please remove any such module, as it conflicts with this one ⚠"
 ui_print "ⓘ Once you reboot, run 'su -c manage_fonts' in TermUX (recommended)"
 sleep 1
-am start -a android.intent.action.VIEW -d "https://www.androidacy.com/install-done/?f=fontmanagert&r=fmi&v=5.1.7" &>/dev/null
+am start -a android.intent.action.VIEW -d "https://www.androidacy.com/install-done/?f=fontmanager&r=fmi&v=5.1.7" &>/dev/null

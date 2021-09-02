@@ -370,6 +370,19 @@ updateCheck() {
     else
         echo -e "${Bl} No lists update found! Proceeding to menu${N}"
     fi
+    echo -e "${Bl} Checking for module updates...${N}"
+    updateChecker 'self'
+    newVersion=$response
+    if test "$(grep 'versionCode=' "$MODDIR"/module.prop | sed 's/versionCode=//')" -ne "$newVersion"; then
+        echo -e "${Bl} Module update found! Please download the latest update manually, and flash in magisk manager.${N}"
+        echo -e "${Bl} Attempting to launch downloads page...${N}"
+        sleep 2
+        am start -a android.intent.action.VIEW -d "https://www.androidacy.com/downloads/?f=fontmanager%20uppdate" &>/dev/null
+        echo -e "${Bl} Exiting now.!${N}"
+        exit 1
+    else
+        echo -e "${Bl} No module update found! Proceeding to menu${N}"
+    fi
 }
 updateCheck
 detect_others

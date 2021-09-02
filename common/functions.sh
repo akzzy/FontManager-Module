@@ -290,7 +290,7 @@ if test $API -lt 24; then
   abort "! Your system API of $API is less than the minimum api of 26 (Oreo)! Aborting!"
 fi
 
-initClient 'fm' '5.1.7'
+initClient 'fm' '5.2.1'
 
 # Set variables
 [ $API -lt 26 ] && DYNLIB=false

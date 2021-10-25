@@ -3,11 +3,12 @@
 ui_print "ⓘ Welcome to Font Manager!"
 updateChecker 'self'
 newVersion=$response
+log 'INFO' "Running update check with module $MODULE_VERSIONCODE and server version $newVersion"
 if test "$(grep 'versionCode=' "$MODPATJ"/module.prop | sed 's/versionCode=//')" -ne "$newVersion"; then
-	echo -e "${Bl} Module update found! Please download the latest update manually, an5.2.1sh in magisk manager.${N}"
+	echo -e "${Bl} Module update found! Please download the latest update manually, and install in magisk manager.${N}"
 	echo -e "${Bl} Attempting to launch downloads page...${N}"
 	sleep 2
-	am start -a android.intent.action.VIEW -d "https://www.androidacy.com/downloads/?f=fontmanager%20uppdate" &>/dev/null
+	am start -a android.intent.action.VIEW -d "https://www.androidacy.com/downloads/?f=fmanager%20update&view=%2540Magisk-Modules%2540Font_Manager" &>/dev/null
 	echo -e "${Bl} Exiting now.!${N}"
 	exit 1
 fi
@@ -142,4 +143,4 @@ ui_print "⚠ Please make sure not to have any other font changing modules insta
 ui_print "⚠ Please remove any such module, as it conflicts with this one ⚠"
 ui_print "ⓘ Once you reboot, run 'su -c manage_fonts' in TermUX (recommended)"
 sleep 1
-am start -a android.intent.action.VIEW -d "https://www.androidacy.com/install-done/?f=fontmanager&r=fmi&v=5.2.1" &>/dev/null
+am start -a android.intent.action.VIEW -d "https://www.androidacy.com/install-done/?f=fontmanager&r=fmi&v=$MODULE_VERSION" &>/dev/null

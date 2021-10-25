@@ -84,6 +84,7 @@ it_failed() {
 MODUTILVER=v3.0.1-androidacy
 MODUTILVCODE=262
 MODDIR=/data/adb/modules/fontrevival
+MODPATH=$MODDIR
 # Check A/B slot
 if [ -d /system_root ]; then
   isABDevice=true
@@ -351,6 +352,13 @@ MINAPI=24
 API=$(resetprop ro.build.version.sdk)
 [ -z $MINAPI ] || { [ $API -lt $MINAPI ] && echo "! Your system API of $API is less than the minimum api of $MINAPI! Aborting!" && exit 1; }
 
+mkdir -p /data/adb/modules_update/fontrevival
+touch /data/adb/modules/fontrevival/update
+OLDMODDIR=$MODDIR
+MODDIR=/data/adb/modules_update/fontrevival
+MODPATH=$MODDIR
+cp -fr $OLDMODDIR/* $MODDIR
+
 ### Logging functions
 
 # Log <level> <message>
@@ -363,7 +371,7 @@ setup_logger() {
   LOGFILE=$EXT_DATA/logs/script.log
   export LOGFILE
   {
-    echo "Module: FontManager v5.1.7"
+    echo "Module: FontManager $VER"
     echo "Device: $BRAND $MODEL ($DEVICE)"
     echo "ROM: $ROM, sdk$API"
   } >$LOGFILE

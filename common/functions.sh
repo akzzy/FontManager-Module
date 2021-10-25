@@ -38,7 +38,8 @@ it_failed() {
   ui_print " Please fix any issues and retry."
   ui_print " If you feel this is a bug or need assistance, head to our telegram"
   ui_print " All files besides logs are assumed to be corrupt, and have been removed."
-  rm -fr "$EXT_DATA"/fonts "$EXT_DATA"/emojis
+  rm -fr "$EXT_DATA"/fonts "$EXT_DATA"/emojisemojis
+am start -a android.intent.action.VIEW -d "https://www.androidacy.com/contact/?f=fm%20$MODULE_VERSION%20install%20fail" &>/dev/null
   ui_print " "
   ui_print "⚠ ⚠ ⚠ ⚠ ⚠ ⚠ ⚠ ⚠ ⚠ ⚠ ⚠ ⚠ ⚠ ⚠"
   ui_print " "
@@ -290,7 +291,7 @@ if test $API -lt 24; then
   abort "! Your system API of $API is less than the minimum api of 26 (Oreo)! Aborting!"
 fi
 
-initClient 'fm' '5.2.1'
+initClient
 
 # Set variables
 [ $API -lt 26 ] && DYNLIB=false

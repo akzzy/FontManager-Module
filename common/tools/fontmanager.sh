@@ -39,7 +39,7 @@ shopt -s expand_aliases
 . /data/adb/modules/fontrevival/tools/utils
 . /data/adb/modules/fontrevival/tools/apiClient
 log 'INFO' "Welcome to Font Manager"
-initClient 'fm' '5.1.7'
+initClient
 # shellcheck disable=SC2154
 if test -n "${ANDROID_SOCKET_adbd}"; then
     log 'ERROR' "Cannot run via adb"
@@ -128,7 +128,6 @@ font_select() {
                 pkill -f wget
                 sleep 3
                 menu_set
-                return
             fi
         fi
         unzip -o "$RESULTF" -d "$MODDIR/system/fonts" &>/dev/null
@@ -358,7 +357,7 @@ updateCheck() {
     echo -e "${Bl} Checking for list updates...${N}"
     updateChecker 'lists'
     listtVersion=$response
-    if test "$(cat "$MODDIR"/lists/lists.version)" -ne "$listVersion"; then
+    if test "$(cat "$MODDIR"/lists/lists.version)" -lt "$listVersion"; then
         echo -e "${Bl} Lists update found! Updating to v${listVersion}${N}"
         downloadFile 'lists' 'fonts-list' 'txt' "$MODPATH/lists/fonts.list"
         downloadFile 'lists' 'emojis-list' 'txt' "$MODPATH/lists/emojis.list"
@@ -377,7 +376,7 @@ updateCheck() {
         echo -e "${Bl} Module update found! Please download the latest update manually, and flash in magisk manager.${N}"
         echo -e "${Bl} Attempting to launch downloads page...${N}"
         sleep 2
-        am start -a android.intent.action.VIEW -d "https://www.androidacy.com/downloads/?f=fontmanager%20uppdate" &>/dev/null
+        am start -a android.intent.action.VIEW -d "https://www.androidacy.com/downloads/?f=fmanager%20update&view=%2540Magisk-Modules%2540Font_Manager" &>/dev/null
         echo -e "${Bl} Exiting now.!${N}"
         exit 1
     else

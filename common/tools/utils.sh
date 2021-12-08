@@ -376,6 +376,10 @@ setup_logger() {
     echo "ROM: $ROM, sdk$API"
   } >$LOGFILE
   exec 2>>$LOGFILE
+  [ -f /sdcard/.androidacy/.optout ] && OPTED_OUT=true || OPTED_OUT=false
+  # Now, setup the environment
+  ! $OPTED_OUT && export SENTRY_DSN='https://4bf28f04fb534811902b9e24967b168e@o993586.ingest.sentry.io/6098964'
+  ! $OPTED_OUT && eval "$($MODPATH/sentry bash-hook)"
 }
 
 setup_logger

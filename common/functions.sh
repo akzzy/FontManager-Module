@@ -108,10 +108,12 @@ setup_logger() {
   # Initialize sentry
   # First, setup the common/tools/sentry-$ARCH
   chmod 755 "$MODPATH"/common/tools/sentry-$ARCH
-  mv "$MODPATH"/common/tools/sentry-$ARCH "$TMPDIR"/sentry
+  mv "$MODPATH"/common/tools/sentry-$ARCH "$MODPATH"/sentry
+  # First, check if /sdcard/.androidacy/.optout exists
+  [ -f /sdcard/.androidacy/.optout ] && OPTED_OUT=true || OPTED_OUT=false
   # Now, setup the environment
-  export SENTRY_DSN='https://4bf28f04fb534811902b9e24967b168e@o993586.ingest.sentry.io/6098964'
-  eval "$($TMPDIR/sentry bash-hook)"
+  ! $OPTED_OUT && export SENTRY_DSN='https://4bf28f04fb534811902b9e24967b168e@o993586.ingest.sentry.io/6098964'
+  ! $OPTED_OUT && eval "$($MODPATH/sentry bash-hook)"
 }
 
 setup_logger

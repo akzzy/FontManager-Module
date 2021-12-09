@@ -1,8 +1,10 @@
 # shellcheck shell=bash
 # shellcheck disable=SC2061,SC3010,SC2166,SC2044,SC2046,SC2086,SC1090,SC2034,SC2155,SC1091,SC2001
 
+# Source util-functions.sh since we switched shells
+. /data/adb/magisk/util_functions.sh
 [ -f "$MODPATH/common/addon.tar.xz" ] && tar -xf $MODPATH/common/addon.tar.xz -C $MODPATH/common 2>/dev/null
-
+alias ui_print="echo"
 # All error catching attempts failed, let's bail out.
 it_failed() {
   ui_print " "
@@ -34,27 +36,10 @@ abort() {
   it_failed
 }
 detect_ext_data() {
-  if touch /sdcard/.rw && rm /sdcard/.rw; then
-    export EXT_DATA="/sdcard/FontManager"
-  elif touch /storage/emulated/0/.rw && rm /storage/emulated/0/.rw; then
-    export EXT_DATA="/storage/emulated/0/FontManager"
-  elif touch /data/media/0/.rw && rm /data/media/0/.rw; then
-    export EXT_DATA="/data/media/0/FontManager"
-  else
-    EXT_DATA='/storage/emulated/0/FontManager'
-    ui_print "⚠ Possible internal storage access issues! Please make sure data is mounted and decrypted."
-    ui_print "⚠ Trying to proceed anyway..."
-  fi
-  if test ! -d "$EXT_DATA"; then
-    mkdir "$EXT_DATA"
-  fi
-  if ! mktouch "$EXT_DATA"/.rw && rm -fr "$EXT_DATA"/.rw; then
-    if ! rm -fr "$EXT_DATA" && mktouch "$EXT_DATA"/.rw && rm -fr "$EXT_DATA"/.rw; then
-      ui_print "⚠ Cannot access internal storage!"
-      it_failed
-    fi
-  fi
-  mkdir "$MODPATH"/logs/
+  export EXT_DATA='/sdcard/FontManager'
+  export MODPATH="/data/adb/modules_update/fontrevival"
+  export TMPDIR="/data/adb/modules_update/fontrevival"
+  mkdir -p "$MODPATH"/logs/
   mkdir -p "$EXT_DATA"/apks/
   mkdir -p "$EXT_DATA"/logs/
   chmod 750 -R "$EXT_DATA"
@@ -77,7 +62,7 @@ setup_logger() {
   LOGFILE=$EXT_DATA/logs/install.log
   export LOGFILE
   {
-    echo "Module: FontManager v5.1.3"
+    echo "Module: FontManager v$(grep 'version=' $MODPATH/module.prop | cut -d"=" -f2)"
     echo "Device: $BRAND $MODEL ($DEVICE)"
     echo "ROM: $ROM, sdk$API"
   } >$LOGFILE
@@ -87,7 +72,6 @@ setup_logger() {
   exec 2>>$LOGFILE
   # Initialize sentry
   # First, setup the common/tools/sentry-$ARCH
-  chmod 755 "$MODPATH"/common/tools/sentry-$ARCH
   mv "$MODPATH"/common/tools/sentry-$ARCH "$MODPATH"/sentry
   # First, check if /sdcard/.androidacy/.optout exists
   [ -f /sdcard/.androidacy/.optout ] && OPTED_OUT=true || OPTED_OUT=false

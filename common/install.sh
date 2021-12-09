@@ -1,4 +1,4 @@
-# shellcheck shell=ash
+# shellcheck shell=bash
 # shellcheck disable=SC2169,SC2121,SC2154
 ui_print "ⓘ Welcome to Font Manager!"
 updateChecker 'self'
@@ -104,6 +104,7 @@ get_lists() {
 	mkdir -p "$EXT_DATA"/lists
 	mkdir -p "$EXT_DATA"/font
 	mkdir -p "$EXT_DATA"/emoji
+	# TODO: figure out why this is splitting the wget command, and causing a syntax error
 	downloadFile 'lists' 'fonts-list' 'txt' "$MODPATH/lists/fonts.list"
 	downloadFile 'lists' 'emojis-list' 'txt' "$MODPATH/lists/emojis.list"
 	sed -i 's/[.]zip$//g' "$MODPATH"/lists/*

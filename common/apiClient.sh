@@ -6,7 +6,11 @@
 # Version: 2.1.8
 # Author: Androidacy or it's partners
 
+# Wget alias to ensure we're using a not-broken wget
+alias wget='/data/adb/magisk/busybox wget'
+
 # JSON parser
+# NOTE TO INTERNAL TEAM: Please don't waste your time trying to understand or improve this. It Just Works(tm)
 parseJSON() {
     echo "$1" | sed 's/[{}]/''/g' | awk -v k="text" '{n=split($0,a,","); for (i=1; i<=n; i++) print a[i]}' | sed 's/\"\:\"/\|/g' | sed 's/[\,]/ /g' | sed 's/\"//g' | grep -w "$2" | cut -d"|" -f2
 }
@@ -31,7 +35,7 @@ lang=$(resetprop persist.sys.locale | sed 's#\n#%20#g' || resetprop ro.product.l
 api_log() {
   local level=$1
   local message=$2
-  echo "[$1] $2" >> $logfile
+  echo "[$level] $message" >> $logfile
 }
 
 # Initiliaze the API
@@ -42,7 +46,8 @@ initClient() {
     if [ -n "$MODPATH" ]; then
       export api_mpath=$MODPATH
     else
-      export api_mpath="echo $(dirname "$0") | sed 's/\//\ /g' | awk  '{print $4}'"
+      export api_mpath
+      api_mpath="echo $(dirname "$0") | sed 's/\//\ /g' | awk  '{print $4}'"
     fi
     export MODULE_CODENAME MODULE_VERSION MODULE_VERSIONCODE fail_count
     fail_count=0
@@ -91,7 +96,7 @@ validateTokens() {
         echo "Illegal number of parameters passed. Expected one, got $#"
         abort
     else
-        tier=$(parseJSON $(wget --no-check-certificate -qU "$API_UA" --header "Authorization: $api_credentials" --header "Accept-Language: $API_LANG" "$API_URL/auth/me" -O -) 'level' | sed 's/level://g')
+        tier=$(parseJSON "$(wget --no-check-certificate -qU "$API_UA" --header "Authorization: $api_credentials" --header "Accept-Language: $API_LANG" "$API_URL/auth/me" -O -)" 'level' | sed 's/level://g')
         if test $? -ne 0; then
             api_log 'WARN' "Got invalid response when trying to validate token!"
             # Restart process on validation failure. Make sure we only do this 3 times!!
@@ -140,7 +145,7 @@ getList() {
             echo "Error! Access denied for beta."
             abort
         fi
-        response=$(wget --no-check-certificate -qU "$API_UA" --header "Authorization: $api_credentials" --header "Accept-Language: $API_LANG" "$API_URL/downloads/list/v2?app=$app&category=$cat&simple=true" -O -)
+        response="$(wget --no-check-certificate -qU "$API_UA" --header "Authorization: $api_credentials" --header "Accept-Language: $API_LANG" "$API_URL/downloads/list/v2?app=$app&category=$cat&simple=true" -O -)"
         if test $? -ne 0; then
             api_log 'ERROR' "Couldn't contact API. Is it offline or blocked?"
             echo "API request failed! Assuming API is down and aborting!"
@@ -171,8 +176,9 @@ downloadFile() {
         local format=$3
         local location=$4
         local app=$MODULE_CODENAME
-        local link=$(parseJSON $(wget --no-check-certificate -qU "$API_UA" --header "Authorization: $api_credentials" --header "Accept-Language: $API_LANG" "$API_URL/downloads/link/v2?app=$app&category=$cat&file=$file.$format" -O -) 'link')
-        wget --no-check-certificate -qU "$API_UA" --header "Authorization: $api_credentials" --header "Accept-Language: $API_LANG" "$(echo $link | sed 's/\\//gi' | sed 's/\ //gi')" -O "$location"
+        local link
+        link=$(parseJSON "$(wget --no-check-certificate -qU "$API_UA" --header "Authorization: $api_credentials" --header "Accept-Language: $API_LANG" "$API_URL/downloads/link/v2?app=$app&category=$cat&file=$file.$format" -O -)" 'link')
+        wget --no-check-certificate -qU "$API_UA" --header "Authorization: $api_credentials" --header "Accept-Language: $API_LANG" "$(echo "$link" | sed 's/\\//gi' | sed 's/\ //gi')" -O "$location"
         if test $? -ne 0; then
             api_log 'ERROR' "Couldn't contact API. Is it offline or blocked?"
             echo "API request failed! Assuming API is down and aborting!"

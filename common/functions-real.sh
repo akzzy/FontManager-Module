@@ -83,6 +83,24 @@ setup_logger() {
 setup_logger
 # Debug
 ui_print "ⓘ Logging verbosely to ${EXT_DATA}/logs"
+# alias busybox applets
+set_busybox() {
+  if [ -x "$1" ]; then
+    for i in $(${1} --list); do
+      if [ "$i" != 'echo' ]; then
+        # shellcheck disable=SC2140,2139
+        alias "$i"="${1} $i" &>/dev/null
+      fi
+    done
+    _busybox=true
+    _bb=$1
+  fi
+}
+_busybox=true
+_bb=/data/adb/magisk/busybox
+if ! set_busybox $_bb; then
+  exit 1;
+fi
 . $MODPATH/common/apiClient.sh
 mount_apex() {
   $BOOTMODE || [ ! -d /system/apex ] && return

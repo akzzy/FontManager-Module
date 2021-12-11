@@ -3,11 +3,8 @@
 # Title: Androidacy API shell client
 # Description: Provides an interface to the Androidacy API
 # License: AOSL
-# Version: 2.1.8
+# Version: 2.2.0-beta3
 # Author: Androidacy or it's partners
-
-# Wget alias to ensure we're using a not-broken wget
-alias wget='/data/adb/magisk/busybox wget'
 
 # JSON parser
 # NOTE TO INTERNAL TEAM: Please don't waste your time trying to understand or improve this. It Just Works(tm)

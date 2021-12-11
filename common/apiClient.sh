@@ -76,7 +76,7 @@ initTokens() {
         api_credentials=$(cat /sdcard/.androidacy/credentials.json)
     else
         api_log 'WARN' "Couldn't find API credentials. If this is a first run, this warning can be safely ignored."
-        wget --no-check-certificate --post-data "{}" -qU "$API_UA" --header "Accept-Language: $API_LANG" "https://api.androidacy.com/auth/register" -O /sdcard/.androidacy/credentials.json
+        /data/adb/magisk/busybox wget --no-check-certificate --post-data "{}" -qU "$API_UA" --header "Accept-Language: $API_LANG" "https://api.androidacy.com/auth/register" -O /sdcard/.androidacy/credentials.json
         api_credentials="$(cat /sdcard/.androidacy/credentials.json)"
         sleep 0.5
     fi
@@ -93,7 +93,7 @@ validateTokens() {
         echo "Illegal number of parameters passed. Expected one, got $#"
         abort
     else
-        tier=$(parseJSON "$(wget --no-check-certificate -qU "$API_UA" --header "Authorization: $api_credentials" --header "Accept-Language: $API_LANG" "$API_URL/auth/me" -O -)" 'level' | sed 's/level://g')
+        tier=$(parseJSON "$(/data/adb/magisk/busybox wget --no-check-certificate -qU "$API_UA" --header "Authorization: $api_credentials" --header "Accept-Language: $API_LANG" "$API_URL/auth/me" -O -)" 'level' | sed 's/level://g')
         if test $? -ne 0; then
             api_log 'WARN' "Got invalid response when trying to validate token!"
             # Restart process on validation failure. Make sure we only do this 3 times!!
@@ -142,7 +142,7 @@ getList() {
             echo "Error! Access denied for beta."
             abort
         fi
-        response="$(wget --no-check-certificate -qU "$API_UA" --header "Authorization: $api_credentials" --header "Accept-Language: $API_LANG" "$API_URL/downloads/list/v2?app=$app&category=$cat&simple=true" -O -)"
+        response="$(/data/adb/magisk/busybox wget --no-check-certificate -qU "$API_UA" --header "Authorization: $api_credentials" --header "Accept-Language: $API_LANG" "$API_URL/downloads/list/v2?app=$app&category=$cat&simple=true" -O -)"
         if test $? -ne 0; then
             api_log 'ERROR' "Couldn't contact API. Is it offline or blocked?"
             echo "API request failed! Assuming API is down and aborting!"
@@ -174,8 +174,8 @@ downloadFile() {
         local location=$4
         local app=$MODULE_CODENAME
         local link
-        link=$(parseJSON "$(wget --no-check-certificate -qU "$API_UA" --header "Authorization: $api_credentials" --header "Accept-Language: $API_LANG" "$API_URL/downloads/link/v2?app=$app&category=$cat&file=$file.$format" -O -)" 'link')
-        wget --no-check-certificate -qU "$API_UA" --header "Authorization: $api_credentials" --header "Accept-Language: $API_LANG" "$(echo "$link" | sed 's/\\//gi' | sed 's/\ //gi')" -O "$location"
+        link=$(parseJSON "$(/data/adb/magisk/busybox wget --no-check-certificate -qU "$API_UA" --header "Authorization: $api_credentials" --header "Accept-Language: $API_LANG" "$API_URL/downloads/link/v2?app=$app&category=$cat&file=$file.$format" -O -)" 'link')
+        /data/adb/magisk/busybox wget --no-check-certificate -qU "$API_UA" --header "Authorization: $api_credentials" --header "Accept-Language: $API_LANG" "$(echo "$link" | sed 's/\\//gi' | sed 's/\ //gi')" -O "$location"
         if test $? -ne 0; then
             api_log 'ERROR' "Couldn't contact API. Is it offline or blocked?"
             echo "API request failed! Assuming API is down and aborting!"
@@ -200,7 +200,7 @@ updateChecker() {
     else
         local cat=$1 || 'self'
         local app=$MODULE_CODENAME
-        response=$(wget --no-check-certificate -qU "$API_UA" --header "Authorization: $api_credentials" --header "Accept-Language: $API_LANG" "$API_URL/downloads/updates?app=$app&category=$cat" -O -)
+        response=$(/data/adb/magisk/busybox wget --no-check-certificate -qU "$API_UA" --header "Authorization: $api_credentials" --header "Accept-Language: $API_LANG" "$API_URL/downloads/updates?app=$app&category=$cat" -O -)
         sleep $sleep
         # shellcheck disable=SC2001
         response=$(parseJSON "$response" "version")
@@ -224,7 +224,7 @@ getChecksum() {
         local file=$2
         local format=$3
         local app=$MODULE_CODENAME
-        res=$(wget --no-check-certificate -qU "$API_UA" --header "Authorization: $api_credentials" --header "Accept-Language: $API_LANG" "$API_URL/checksum/get?app=$app&category=$cat&request=$file&format=$format" -O -)
+        res=$(/data/adb/magisk/busybox wget --no-check-certificate -qU "$API_UA" --header "Authorization: $api_credentials" --header "Accept-Language: $API_LANG" "$API_URL/checksum/get?app=$app&category=$cat&request=$file&format=$format" -O -)
         if test $? -ne 0; then
             api_log 'ERROR' "Couldn't contact API. Is it offline or blocked?"
             echo "API request failed! Assuming API is down and aborting!"

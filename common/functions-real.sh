@@ -17,7 +17,7 @@ it_failed() {
   ui_print " If you feel this is a bug or need assistance, head to our telegram"
   ui_print " All files besides logs are assumed to be corrupt, and have been removed."
   rm -fr "$EXT_DATA"/fonts "$EXT_DATA"/emojis
-  $MODPATH/sentry send-event -m “Install failed” –-logfile $LOGFILE
+  $MODPATH/sentry send-event -m "Install failed" --logfile $LOGFILE
   # shellcheck disable=SC3020
   am start -a android.intent.action.VIEW -d "https://www.androidacy.com/contact/?f=fm%20$MODULE_VERSION%20install%20fail" &>/dev/null
   ui_print " "

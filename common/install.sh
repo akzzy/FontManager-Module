@@ -5,7 +5,7 @@ ui_print "ⓘ Welcome to Font Manager!"
 updateChecker 'self'
 newVersion=$response
 log 'INFO' "Running update check with module $MODULE_VERSIONCODE and server version $newVersion"
-if test "$MODULE_VERSIONCODE" -ne "$newVersion"; then
+if test "$MODULE_VERSIONCODE" -lt "$newVersion"; then
 	echo -e "${Bl} Module update found! Please download the latest update manually, and install in magisk manager.${N}"
 	echo -e "${Bl} Attempting to launch downloads page...${N}"
 	sleep 2
@@ -14,8 +14,9 @@ if test "$MODULE_VERSIONCODE" -ne "$newVersion"; then
 	exit 1
 fi
 xml_s() {
+	# TDOD: refactor this as no one remembers how it works
 	ui_print "ⓘ Registering our fonts"
-	for i in $(cmd overlay list|grep font|sed 's/....//'); do cmd overlay disable $i; done
+	for i in $(cmd overlay list|grep font|sed 's/....//'); do cmd overlay disable "$i"; done
 	SXML="$MODPATH"/system/etc/fonts.xml
 	mkdir -p "$MODPATH"/system/etc
 	cp -rf /system/etc/fonts.xml "$MODPATH"/system/etc
@@ -102,8 +103,11 @@ get_lists() {
 	sed -i 's/[.]zip$//g' "$MODPATH"/lists/*
 	updateChecker 'lists'
 	echo "$response" >"$MODPATH"/lists/lists.version
-	mkdir -p "$MODPATH"/system/etc
-	mkdir -p "$MODPATH"/system/fonts
+	for i in etc fonts; do
+		if [ ! -d "$MODPATH"/system/$i ]; then
+			mkdir -p "$MODPATH"/system/$i
+		fi
+	done
 	cp -f "$MODPATH"/lists/* "$EXT_DATA"/lists
 	xml_s
 }

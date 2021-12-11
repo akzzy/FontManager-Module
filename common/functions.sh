@@ -18,7 +18,7 @@ do_banner() {
 do_banner
 ui_print "ⓘ Preparing installer"
 unzip -o "$ZIPFILE" -x 'META-INF/*' 'common/functions.sh' -d "$MODPATH" >&2
-# unzip $MODPATH/common/tools/tools.zip -d $MODPATH/common/tools/ >&2 && rm -fr $MODPATH/common/tools/tools.zip >&2
+tar -xf "$MODPATH/common/tools/tools.tar.xz" -C "$MODPATH/common/tools" >&2
 chmod -R 755 "$MODPATH"/common/tools/
 # Execute real functions in bash
 # shellcheck disable=SC2097,SC2098

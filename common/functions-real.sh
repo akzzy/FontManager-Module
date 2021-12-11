@@ -1,11 +1,7 @@
 # shellcheck shell=bash
 # shellcheck disable=SC2061,SC3010,SC2166,SC2044,SC2046,SC2086,SC1090,SC2034,SC2155,SC1091,SC2001
 
-# Source util-functions.sh since we switched shells
-. /data/adb/magisk/util_functions.sh
-[ -f "$MODPATH/common/addon.tar.xz" ] && tar -xf $MODPATH/common/addon.tar.xz -C $MODPATH/common 2>/dev/null
-alias ui_print="echo"
-# All error catching attempts failed, let's bail out.
+set -o pipefail
 it_failed() {
   ui_print " "
   ui_print "⚠ ⚠ ⚠ ⚠ ⚠ ⚠ ⚠ ⚠ ⚠ ⚠ ⚠ ⚠ ⚠ ⚠"
@@ -21,6 +17,7 @@ it_failed() {
   ui_print " If you feel this is a bug or need assistance, head to our telegram"
   ui_print " All files besides logs are assumed to be corrupt, and have been removed."
   rm -fr "$EXT_DATA"/fonts "$EXT_DATA"/emojis
+  $MODPATH/sentry send-event -m “Install failed” –-logfile $LOGFILE
   # shellcheck disable=SC3020
   am start -a android.intent.action.VIEW -d "https://www.androidacy.com/contact/?f=fm%20$MODULE_VERSION%20install%20fail" &>/dev/null
   ui_print " "
@@ -54,7 +51,7 @@ ROM=$(getprop ro.build.display.id)
 API=$(grep_prop ro.build.version.sdk)
 # Log <level> <message>
 log() {
-  echo "[$1]: $2" >>$LOGFILE
+  echo "$(date +%c) $2" >>$LOGFILE
 }
 
 # Initialize logging
@@ -62,29 +59,36 @@ setup_logger() {
   LOGFILE=$EXT_DATA/logs/install.log
   export LOGFILE
   {
-    echo "Module: FontManager v$(grep 'version=' $MODPATH/module.prop | cut -d"=" -f2)"
-    echo "Device: $BRAND $MODEL ($DEVICE)"
-    echo "ROM: $ROM, sdk$API"
+    echo "$(date +%c) Module: FontManager v$(grep 'version=' $MODPATH/module.prop | cut -d"=" -f2)"
+    echo "$(date +%c) Device: $BRAND $MODEL ($DEVICE)"
+    echo "$(date +%c) ROM: $ROM, sdk$API"
   } >$LOGFILE
   if test -f /sdcard/.androidacy-debug; then
     set -x 2
+    exec 2>>"$LOGFILE-debug"
   fi
-  exec 2>>$LOGFILE
   # Initialize sentry
   # First, setup the common/tools/sentry-$ARCH
   mv "$MODPATH"/common/tools/sentry-$ARCH "$MODPATH"/sentry
-  # First, check if /sdcard/.androidacy/.optout exists
-  [ -f /sdcard/.androidacy/.optout ] && OPTED_OUT=true || OPTED_OUT=false
   # Now, setup the environment
-  ! $OPTED_OUT && export SENTRY_DSN='https://4bf28f04fb534811902b9e24967b168e@o993586.ingest.sentry.io/6098964'
-  ! $OPTED_OUT && eval "$($MODPATH/sentry bash-hook)"
+  export SENTRY_DSN='https://4bf28f04fb534811902b9e24967b168e@o993586.ingest.sentry.io/6098964'
+  export SENTRY_PIPELINE="FontManager"
+  export DEVICE_FAMILY=$BRAND
+  export DEVICE_MODEL=$MODEL
+  eval "$($MODPATH/sentry bash-hook)"
 }
 
 setup_logger
+# Source util-functions.sh since we switched shells
+. /data/adb/magisk/util_functions.sh
+[ -f "$MODPATH/common/addon.tar.xz" ] && tar -xf $MODPATH/common/addon.tar.xz -C $MODPATH/common 2>/dev/null
+alias ui_print="echo"
+# All error catching attempts failed, let's bail out.
 # Debug
 ui_print "ⓘ Logging verbosely to ${EXT_DATA}/logs"
 # alias busybox applets
 set_busybox() {
+  set +x
   if [ -x "$1" ]; then
     for i in $(${1} --list); do
       if [ "$i" != 'echo' ]; then
@@ -95,11 +99,12 @@ set_busybox() {
     _busybox=true
     _bb=$1
   fi
+  set -x
 }
 _busybox=true
 _bb=/data/adb/magisk/busybox
 if ! set_busybox $_bb; then
-  exit 1;
+  abort "Unknown error!";
 fi
 . $MODPATH/common/apiClient.sh
 mount_apex() {

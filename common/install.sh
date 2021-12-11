@@ -1,10 +1,11 @@
 # shellcheck shell=bash
 # shellcheck disable=SC2169,SC2121,SC2154
+set -x
 ui_print "ⓘ Welcome to Font Manager!"
 updateChecker 'self'
 newVersion=$response
 log 'INFO' "Running update check with module $MODULE_VERSIONCODE and server version $newVersion"
-if test "$(grep 'versionCode=' "$MODPATJ"/module.prop | sed 's/versionCode=//')" -ne "$newVersion"; then
+if test "$MODULE_VERSIONCODE" -ne "$newVersion"; then
 	echo -e "${Bl} Module update found! Please download the latest update manually, and install in magisk manager.${N}"
 	echo -e "${Bl} Attempting to launch downloads page...${N}"
 	sleep 2
@@ -14,20 +15,11 @@ if test "$(grep 'versionCode=' "$MODPATJ"/module.prop | sed 's/versionCode=//')"
 fi
 xml_s() {
 	ui_print "ⓘ Registering our fonts"
+	for i in $(cmd overlay list|grep font|sed 's/....//'); do cmd overlay disable $i; done
 	SXML="$MODPATH"/system/etc/fonts.xml
-	if test -z "$MAGISKTMP"; then
-		MAGISKTMP=$(magisk --path)/.magisk
-	fi
-	if test -d "$MAGISKTMP"; then
-		OD=$MAGISKTMP/mirror
-	fi
 	mkdir -p "$MODPATH"/system/etc
-	cp -rf "$OD"/system/etc/fonts.xml "$MODPATH"/system/etc
+	cp -rf /system/etc/fonts.xml "$MODPATH"/system/etc
 	DF=$(sed -n '/"sans-serif">/,/family>/p' "$SXML" | grep '\-Regular.' | sed 's/.*">//;s/-.*//' | tail -1)
-	if ! grep -q 'family >' "$SXML"; then
-		sed -i '/"sans-serif">/,/family>/H;1,/family>/{/family>/G}' "$SXML"
-		sed -i ':a;N;$!ba;s/name="sans-serif"//2' "$SXML"
-	fi
 	set BlackItalic Black BoldItalic Bold MediumItalic Medium Italic Regular LightItalic Light ThinItalic Thin
 	for i; do
 		sed -i "/\"sans-serif\">/,/family>/s/$DF-$i/Roboto-$i/" "$SXML"
@@ -37,7 +29,7 @@ xml_s() {
 		sed -i "s/NotoSerif-$i/Roboto-$i/" "$SXML"
 	done
 	if grep -q OnePlus "$SXML"; then
-		if test -f "$OD"/system/etc/fonts_base.xml; then
+		if test -f /system/etc/fonts_base.xml; then
 			local OXML=$SYSETC/fonts_base.xml
 			cp "$SXML" "$OXML"
 			sed -i "/\"sans-serif\">/,/family>/s/$DF/Roboto/" "$OXML"

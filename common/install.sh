@@ -15,7 +15,7 @@ if test "$MODULE_VERSIONCODE" -lt "$newVersion"; then
 fi
 xml_s() {
 	# TDOD: refactor this as no one remembers how it works
-	ui_print "ⓘ Registering our fonts"
+	ui_print "ⓘ Registering our fonts, and reverting to default font."
 	for i in $(cmd overlay list|grep font|sed 's/....//'); do cmd overlay disable "$i"; done
 	SXML="$MODPATH"/system/etc/fonts.xml
 	mkdir -p "$MODPATH"/system/etc

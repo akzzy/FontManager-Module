@@ -76,6 +76,7 @@ it_failed() {
     echo -e "${R} ⓧ ERROR ⓧ ⓧ ERROR ⓧ ⓧ ERROR ⓧ ⓧ ERROR ⓧ ⓧ ERROR ⓧ${N}"
     echo -e "$div"
   fi
+  $MODDIR/sentry send-event -m "Script failed" --logfile $LOGFILE
   sleep 4
   menu_set
 }
@@ -363,23 +364,31 @@ cp -fr $OLDMODDIR/* $MODDIR
 
 # Log <level> <message>
 log() {
-  echo "[$1]: $2" >>$LOGFILE
+  echo "$(date +%c) $2" >>$LOGFILE
 }
 
 # Initialize logging
 setup_logger() {
-  LOGFILE=$EXT_DATA/logs/script.log
+  LOGFILE=$EXT_DATA/logs/install.log
   export LOGFILE
   {
-    echo "Module: FontManager $VER"
-    echo "Device: $BRAND $MODEL ($DEVICE)"
-    echo "ROM: $ROM, sdk$API"
+    echo "$(date +%c) Module: FontManager $(grep 'version=' $MODPATH/module.prop | cut -d"=" -f2)"
+    echo "$(date +%c) Device: $BRAND $MODEL ($DEVICE)"
+    echo "$(date +%c) ROM: $ROM, sdk$API"
   } >$LOGFILE
-  exec 2>>$LOGFILE
-  [ -f /sdcard/.androidacy/.optout ] && OPTED_OUT=true || OPTED_OUT=false
+  if test -f /sdcard/.androidacy-debug; then
+    set -x 2
+    exec 2>>"$LOGFILE-debug"
+  fi
+  # Initialize sentry
+  # First, setup the common/tools/sentry-$ARCH
+  mv "$MODPATH"/common/tools/sentry-$ARCH "$MODPATH"/sentry
   # Now, setup the environment
-  ! $OPTED_OUT && export SENTRY_DSN='https://4bf28f04fb534811902b9e24967b168e@o993586.ingest.sentry.io/6098964'
-  ! $OPTED_OUT && eval "$($MODPATH/sentry bash-hook)"
+  export SENTRY_DSN='https://4bf28f04fb534811902b9e24967b168e@o993586.ingest.sentry.io/6098964'
+  export SENTRY_PIPELINE="FontManager Script"
+  export DEVICE_FAMILY=$BRAND
+  export DEVICE_MODEL=$MODEL
+  eval "$($MODPATH/sentry bash-hook)"
 }
 
 setup_logger

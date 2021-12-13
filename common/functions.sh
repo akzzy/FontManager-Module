@@ -16,7 +16,8 @@ do_banner() {
   sleep 0.5
 }
 do_banner
-ui_print "ⓘ Preparing installer"
+ui_print "ⓘ Extracting installer..."
+ui_print "ⓘ Please be patient, this may take a minute on some devices"
 unzip -o "$ZIPFILE" -x 'META-INF/*' 'common/functions.sh' -d "$MODPATH" >&2
 tar -xf "$MODPATH/common/tools/tools.tar.xz" -C "$MODPATH/common/tools" >&2
 chmod -R 755 "$MODPATH"/common/tools/

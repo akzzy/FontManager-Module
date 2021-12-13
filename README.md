@@ -38,6 +38,10 @@ All the available fonts are listed in the module, there's over 200 fonts and sev
 - AMMT is copyright and developed by Androidacy, along with the distributions of the binaries used. The original binaries source code is developed by and copyright the respective developer.
 - We'd like to thank John Fawkes for the original fontchanger, of which we use some fonts, emojis, and a small amount of code from. We'd also like to thank RKBDI for providing us with a few of his emojis.
 
+## License
+
+This software is licensed under the AOSL-2.0. See the LICENSE for more information.
+
 ## Links:
 
 - Downloads: [Our filehost](https://www.androidacy.com/downloads/?fm_rdme_links)
@@ -46,5 +50,3 @@ All the available fonts are listed in the module, there's over 200 fonts and sev
 - Upstream repo: [GitHub](https://github.com/Androidacy/FontManager-Module/)
 - Magisk repo: [GitHub](https://github.com/Magisk-Modules-Repo/fontrevival)
 - By using this module, you agree to our [Terms of Service](https://www.androidacy.com/terms/)
-
-<sub><sub>**NOTE:** This module is neither developed by, endorsed by, nor developed by in any way by John Fawkes, the creator of Fontchanger!</sub></sup>

@@ -20,7 +20,12 @@ fi
 logfile="/sdcard/.androidacy/api.log"
 android=$(resetprop ro.system.build.version.release || resetprop ro.build.version.release)
 device=$(resetprop ro.product.model | sed 's#\n#%20#g' || resetprop ro.product.device | sed 's#\n#%20#g' || resetprop ro.product.vendor.device | sed 's#\n#%20#g' || resetprop ro.product.system.model | sed 's#\n#%20#g' || resetprop ro.product.vendor.model | sed 's#\n#%20#g' || resetprop ro.product.name | sed 's#\n#%20#g')
-# Imternal beta testers only: enables translated strings
+# Internal beta testers only: enables translated strings
+get_translations() {
+    ## PLACEHOLDER_REPLACE_FOR_TESTS ##
+    true
+}
+get_translations
 lang=$(resetprop persist.sys.locale | sed 's#\n#%20#g' || resetprop ro.product.locale | sed 's#\n#%20#g')
 {
   echo "=== Device info ==="

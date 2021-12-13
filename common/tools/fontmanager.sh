@@ -11,7 +11,7 @@ detect_ext_data() {
     elif touch /data/media/0/.rw && rm /data/media/0/.rw; then
         export EXT_DATA="/data/media/0/FontManager"
     else
-        EXT_DATA='/storage/emulated/0/FontManager'
+        EXT_DATA='/data/local/tmp/FontManager'
         echo -e "⚠ Possible internal storage access issues! Please make sure data is mounted and decrypted."
         echo -e "⚠ Trying to proceed anyway "
         sleep 2
@@ -78,7 +78,7 @@ font_select() {
         fi
         awk '{printf "\033[47;100m%d.\t%s\n", NR, $0}' <"$MODDIR"/lists/fonts.list | sed -n ${LINESTART},${LINESREAD}p
         echo -e "$div"
-        echo -e "${Bl} x: main menu, q: quit, enter: more, <number>: select"
+        echo -e "${Bl} x: main menu, q: quit, <enter>: more, <number>: select"
         echo -en " Your choice: "
         unset a
         read -r a
@@ -173,7 +173,7 @@ emoji_select() {
         fi
         awk '{printf "\033[47;100m%d.\t%s\n", NR, $0}' <"$MODDIR"/lists/emojis.list | sed -n ${LINESTART},${LINESREAD}p
         echo -e "$div"
-        echo -e "${Bl} x: main menu, q: quit, enter: more, <number>: select"
+        echo -e "${Bl} x: main menu, q: quit, <enter>: more, <number>: select"
         echo -en " Your choice: "
         unset a
         read -r a
@@ -332,9 +332,10 @@ menu_set() {
         echo -e "${Bl}  2. Change your emoji${N}"
         echo -e "${Bl}  3. Revert to stock font and emoji${N}"
         echo -e "${Bl}  4. Reboot to apply changes${N}"
-        echo -e "${Bl}  5. Open font previews${N}"
+        echo -e "${Bl}  5. Preview fonts${N}"
         echo -e "${Bl}  6. Donate to Androidacy${N}"
-        echo -e "${Bl}  7. Quit${N}"
+        echo -e "${Bl}  7. Help and feedback${N}"
+        echo -e "${Bl}  8. Quit${N}"
         echo -e "$div"
         echo -en "${Bl} Your selection: "
         read -r a
@@ -345,7 +346,8 @@ menu_set() {
         4*) reboot_fn ;;
         5*) open_link "font-previewer" ;;
         6*) open_link "donate" ;;
-        7*) do_quit ;;
+        7*) open_link "contact" ;;
+        8*) do_quit ;;
         *) echo -e "${R} Invalid option, please try again${N}" && sleep 2 && menu_set ;;
         esac
     done
@@ -372,7 +374,7 @@ updateCheck() {
     echo -e "${Bl} Checking for module updates...${N}"
     updateChecker 'self'
     newVersion=$response
-    if test "$(grep 'versionCode=' "$MODDIR"/module.prop | sed 's/versionCode=//')" -ne "$newVersion"; then
+    if test "$(grep 'versionCode=' "$MODDIR"/module.prop | sed 's/versionCode=//')" -lt "$newVersion"; then
         echo -e "${Bl} Module update found! Please download the latest update manually, and flash in magisk manager.${N}"
         echo -e "${Bl} Attempting to launch downloads page...${N}"
         sleep 2

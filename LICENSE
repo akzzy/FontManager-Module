@@ -1,25 +1,22 @@
-   Copyright 2021 Androidacy. All rights reserved unless otherwise specified.
+Androidacy Open Source License, v2.0
 
-   This work is licensed under the Androidacy Open Source License, hereafter referred to as the "AOSL".
+Updated December 13, 2021
 
-   Androidacy believes strongly in the power of both free and open source software, and as such, our software is offered that way. We hereby grant you the license to look at, reuse, and share our works, with some limitations and requirements.
+This License governs your usage of the Software. You shall not use this Software except as set forth in the License.
 
-   Androidacy hereby grants you a irrevocable license to:
-   - Obtain the publicly available source code of our Application
-   - Modify the source as you see fit for personal use
-   - Suggest changes to Androidacy, who is under no obligation to make them
+In short, under this License, you may:
+- Use one copy of the software per device
+- Use this software as you see fit for personal use
+- Modify this software as you see fit for personal use
 
-   Under the terms of this license, you may not:
-   - Resell our works, modified or unmodified, for a profit
-   - Rebrand our work as your own
-   - Republish our unmodified Software on any unofficial sources or mirror it
-   - Request private source code.
-   - Use this Software to harm or otherwise damage Androidacy or any of our clients
-   
-   Androidacy will make a best effort to include the source code of any compenents of the Software; however, we are under no obligation to, and will only publish code as we see fit. We also reserve the right to monetize our work as we see fit.
+However, you may not:
+- Redistribute this or modified works of this software, unless the Author expressly allows you to do so.
+- Sell this software or any modified version of it, whether for personal profit or commercial
+- Use this software in a commercial enviroment
+- Circumvent any licensing or copyright protections.
 
-   In addition, if you use an open source compenent by Androidacy in your project, you are hereby obligated to share the source code and any modifications you make to it. You must also credit Androidacy for any code you reuse.
+You, the Licensee, are permitted to use this software and the included libraries as you see fit for your own personal usage. You are not permitted to use, distribute, modify, or otherwise interact with this Software in any commercial environment. You are also not permitted to host this software for public viewability on any server or computer, whether you make a profit from doing so or not.
 
-   THIS SOFTWARE IS OFFERED "AS-IS", WITH NO WARRANTIES EXPRESSED OR IMPLIED. IT IS OFFERED IN THE HOPE THAT IS FOUND USEFUL, BUT ANDROIDACY MAKES NO WARRANTIES OF MERCHANTABILITY FOR ANY PURPOSE WHATSOEVER.
+All logos and names are copyright the Author and may only be used with permission from the Author.
 
-   
+THIS SOFTWARE IS PROVIDED "AS-IS", WITH NO STATEMENT OR WARRANTY OF MERCHANTIBILITY OR USABILITY FOR ANY PURPOSE WHATSOEVER. THE AUTHOR DOES NOT ASSUME ANY RESPONSIBILITY FOR ANY DAMAGE OR COSTS ACCRUED FROM THE USAGE OF THIS SOFTWARE.

@@ -369,7 +369,7 @@ log() {
 
 # Initialize logging
 setup_logger() {
-  LOGFILE=$EXT_DATA/logs/install.log
+  LOGFILE=$EXT_DATA/logs/script.log
   export LOGFILE
   {
     echo "$(date +%c) Module: FontManager $(grep 'version=' $MODPATH/module.prop | cut -d"=" -f2)"
@@ -382,13 +382,12 @@ setup_logger() {
   fi
   # Initialize sentry
   # First, setup the common/tools/sentry-$ARCH
-  mv "$MODPATH"/common/tools/sentry-$ARCH "$MODPATH"/sentry
   # Now, setup the environment
   export SENTRY_DSN='https://4bf28f04fb534811902b9e24967b168e@o993586.ingest.sentry.io/6098964'
   export SENTRY_PIPELINE="FontManager Script"
   export DEVICE_FAMILY=$BRAND
   export DEVICE_MODEL=$MODEL
-  eval "$($MODPATH/sentry bash-hook)"
+  eval "$($MODPATH/tools/sentry bash-hook)"
 }
 
 setup_logger

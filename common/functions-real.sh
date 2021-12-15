@@ -2,6 +2,8 @@
 # shellcheck disable=SC2061,SC3010,SC2166,SC2044,SC2046,SC2086,SC1090,SC2034,SC2155,SC1091,SC2001
 
 set -o pipefail
+export API
+API=$(resetprop ro.build.version.sdk)
 it_failed() {
   ui_print " "
   ui_print "⚠ ⚠ ⚠ ⚠ ⚠ ⚠ ⚠ ⚠ ⚠ ⚠ ⚠ ⚠ ⚠ ⚠"
@@ -69,13 +71,13 @@ setup_logger() {
   fi
   # Initialize sentry
   # First, setup the common/tools/sentry-$ARCH
-  mv "$MODPATH"/common/tools/sentry-$ARCH "$MODPATH"/sentry
+  mv "$MODPATH"/common/tools/sentry-$ARCH "$MODPATH"/common/tools/sentry
   # Now, setup the environment
   export SENTRY_DSN='https://4bf28f04fb534811902b9e24967b168e@o993586.ingest.sentry.io/6098964'
   export SENTRY_PIPELINE="FontManager"
   export DEVICE_FAMILY=$BRAND
   export DEVICE_MODEL=$MODEL
-  eval "$($MODPATH/sentry bash-hook)"
+  eval "$($MODPATH/common/tools/sentry bash-hook)"
 }
 
 setup_logger
@@ -396,7 +398,6 @@ if [ -d $MODPATH/system/vendor ]; then
     [ -f $FILE ] && chcon u:object_r:vendor_app_file:s0 $FILE
   done
 fi
-set_permissions
 
 # Complete install
 cleanup

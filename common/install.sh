@@ -31,9 +31,8 @@ xml_s() {
 	done
 	if grep -q OnePlus "$SXML"; then
 		if test -f /system/etc/fonts_base.xml; then
-			local OXML=$SYSETC/fonts_base.xml
-			cp "$SXML" "$OXML"
-			sed -i "/\"sans-serif\">/,/family>/s/$DF/Roboto/" "$OXML"
+			cp /system/etc/fonts_base.xml "$MODPATH"/system/etc/fonts_base.xml
+			sed -i "/\"sans-serif\">/,/family>/s/$DF/Roboto/" "$MODPATH"/system/etc/fonts_base.xml
 		fi
 	fi
 	if grep -q miui "$SXML"; then
@@ -113,7 +112,6 @@ get_lists() {
 }
 setup_script() {
 	chmod 755 -R "$MODPATH"/system/bin/
-	mkdir "$MODPATH"/system/fonts
 }
 extra_cleanup() {
 	mkdir "$MODPATH"/tools/
@@ -121,7 +119,7 @@ extra_cleanup() {
 	mv "$MODPATH"/common/apiClient.sh "$MODPATH"/tools/apiClient
 	mv "$MODPATH"/common/tools/utils.sh "$MODPATH"/tools/utils
 	mv "$MODPATH/common/tools/bash-$ARCH" "$MODPATH/tools/bash"
-	mv "$MODPATH/common/tools/curl-$ARCH" "$MODPATH/tools/curl"
+	# mv "$MODPATH/common/tools/curl-$ARCH" "$MODPATH/tools/curl"
 	rm -fr "$MODPATH"/common/
 	rm -rf "$MODPATH"/*.md
 	rm -rf "$MODPATH"/LICENSE

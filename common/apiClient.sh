@@ -37,7 +37,7 @@ lang=$(resetprop persist.sys.locale | sed 's#\n#%20#g' || resetprop ro.product.l
 api_log() {
   local level=$1
   local message=$2
-  echo "[$level] $message" >> $logfile
+  echo "$(date +%c) $message" >> $logfile
 }
 
 # Initiliaze the API
@@ -118,8 +118,9 @@ validateTokens() {
         fi
     fi
     if test "$tier" -lt 2; then
-        echo '- Looks like you are using guest credentials'
-        echo '- Get faster downloads and support development - https://www.androidacy.com/donate/'
+        echo '- Free or guest API account detected'
+        echo '- Get faster downloads and support development:'
+        echo '     https://www.androidacy.com/donate/'
         export sleep=0.5
         export API_URL='https://api.androidacy.com'
     else

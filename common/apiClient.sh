@@ -6,12 +6,28 @@
 # Version: 2.2.0-beta3
 # Author: Androidacy or it's partners
 
+__api_tries=0
 # JSON parser
 # NOTE TO INTERNAL TEAM: Please don't waste your time trying to understand or improve this. It Just Works(tm)
 parseJSON() {
     echo "$1" | sed 's/[{}]/''/g' | awk -v k="text" '{n=split($0,a,","); for (i=1; i<=n; i++) print a[i]}' | sed 's/\"\:\"/\|/g' | sed 's/[\,]/ /g' | sed 's/\"//g' | grep -w "$2" | cut -d"|" -f2
 }
 
+# Handles API errors.
+# Delete the /sdcard/.androidacy file/folder if it exists, and try this three times.
+# If it still doesn't work, then exit.
+handleError() {
+    if test $__api_tries -lt 3; then
+        __api_tries=$((__api_tries+1))
+        rm -rf /sdcard/.androidacy
+        sleep 0.5
+        initTokens
+        echo "The API encoutered an error. Trying again...."
+    else
+        echo "API error not recoverable! Exiting..."
+        exit 1
+    fi
+}
 # Initiliaze API logging. Currently, nothing is sent off device, but this may change in the future.
 export logfile android device lang
 if [ ! -d /sdcard/.androidacy ]; then
@@ -35,7 +51,6 @@ lang=$(resetprop persist.sys.locale | sed 's#\n#%20#g' || resetprop ro.product.l
   echo "==================="
 } > $logfile
 api_log() {
-  local level=$1
   local message=$2
   echo "$(date +%c) $message" >> $logfile
 }
@@ -61,7 +76,7 @@ initClient() {
     if [ "$1" != "" ] || [ "$2" != "" ]; then
         api_log 'WARN' "initClient() has been called with arguments, this is legacy behaviour and will be removed in the future"
     fi
-    export API_URL='https://api.androidacy.com'
+    export __api_url='https://api.androidacy.com'
     buildClient
     initTokens
     export __init_complete=true
@@ -82,6 +97,11 @@ initTokens() {
     else
         api_log 'WARN' "Couldn't find API credentials. If this is a first run, this warning can be safely ignored."
         /data/adb/magisk/busybox wget --no-check-certificate --post-data "{}" -qU "$API_UA" --header "Accept-Language: $API_LANG" "https://api.androidacy.com/auth/register" -O /sdcard/.androidacy/credentials.json
+        if test "$0" -ne 0; then
+            api_log 'ERROR' "Couldn't get API credentials. Exiting..."
+            echo "Can't communicate with the API. Please check your internet connection and try again."
+            exit 1
+        fi
         api_credentials="$(cat /sdcard/.androidacy/credentials.json)"
         sleep 0.5
     fi
@@ -98,35 +118,18 @@ validateTokens() {
         echo "Illegal number of parameters passed. Expected one, got $#"
         abort
     else
-        tier=$(parseJSON "$(/data/adb/magisk/busybox wget --no-check-certificate -qU "$API_UA" --header "Authorization: $api_credentials" --header "Accept-Language: $API_LANG" "$API_URL/auth/me" -O -)" 'level' | sed 's/level://g')
+        tier=$(parseJSON "$(/data/adb/magisk/busybox wget --no-check-certificate -qU "$API_UA" --header "Authorization: $api_credentials" --header "Accept-Language: $API_LANG" "$__api_url/auth/me" -O -)" 'level' | sed 's/level://g')
         if test $? -ne 0; then
             api_log 'WARN' "Got invalid response when trying to validate token!"
-            # Restart process on validation failure. Make sure we only do this 3 times!!
-            if [ "$fail_count" -lt 3 ]; then
-                fail_count=$((fail_count + 1))
-                api_log 'INFO' "Restarting process for the $fail_count time"
-                rm -f '/sdcard/.androidacy/credentials.json'
-                sleep 1
-                initTokens
-            else
-                api_log 'ERROR' "Failed to validate token after $fail_count attempts. Aborting."
-                abort
-            fi
+            handleError
+            initTokens
         else
             # Pass the appropriate API access level back to the caller
             export tier
         fi
     fi
-    if test "$tier" -lt 2; then
-        echo '- Free or guest API account detected'
-        echo '- Get faster downloads and support development:'
-        echo '     https://www.androidacy.com/donate/'
-        export sleep=0.5
-        export API_URL='https://api.androidacy.com'
-    else
-        export sleep=0.5
-        export API_URL='https://api.androidacy.com'
-    fi
+    export sleep=0.5
+    export __api_url='https://api.androidacy.com'
 }
 
 # Handle and decode file list JSON
@@ -148,11 +151,10 @@ getList() {
             echo "Error! Access denied for beta."
             abort
         fi
-        response="$(/data/adb/magisk/busybox wget --no-check-certificate -qU "$API_UA" --header "Authorization: $api_credentials" --header "Accept-Language: $API_LANG" "$API_URL/downloads/list/v2?app=$app&category=$cat&simple=true" -O -)"
+        response="$(/data/adb/magisk/busybox wget --no-check-certificate -qU "$API_UA" --header "Authorization: $api_credentials" --header "Accept-Language: $API_LANG" "$__api_url/downloads/list/v2?app=$app&category=$cat&simple=true" -O -)"
         if test $? -ne 0; then
-            api_log 'ERROR' "Couldn't contact API. Is it offline or blocked?"
-            echo "API request failed! Assuming API is down and aborting!"
-            abort
+            handleError
+            getList "$cat"
         fi
         sleep $sleep
         # shellcheck disable=SC2001
@@ -180,12 +182,11 @@ downloadFile() {
         local location=$4
         local app=$MODULE_CODENAME
         local link
-        link=$(parseJSON "$(/data/adb/magisk/busybox wget --no-check-certificate -qU "$API_UA" --header "Authorization: $api_credentials" --header "Accept-Language: $API_LANG" "$API_URL/downloads/link/v2?app=$app&category=$cat&file=$file.$format" -O -)" 'link')
+        link=$(parseJSON "$(/data/adb/magisk/busybox wget --no-check-certificate -qU "$API_UA" --header "Authorization: $api_credentials" --header "Accept-Language: $API_LANG" "$__api_url/downloads/link/v2?app=$app&category=$cat&file=$file.$format" -O -)" 'link')
         /data/adb/magisk/busybox wget --no-check-certificate -qU "$API_UA" --header "Authorization: $api_credentials" --header "Accept-Language: $API_LANG" "$(echo "$link" | sed 's/\\//gi' | sed 's/\ //gi')" -O "$location"
         if test $? -ne 0; then
-            api_log 'ERROR' "Couldn't contact API. Is it offline or blocked?"
-            echo "API request failed! Assuming API is down and aborting!"
-            abort
+            handleError
+            downloadFile "$cat" "$file" "$format" "$location"
         fi
         sleep $sleep
     fi
@@ -206,7 +207,11 @@ updateChecker() {
     else
         local cat=$1 || 'self'
         local app=$MODULE_CODENAME
-        response=$(/data/adb/magisk/busybox wget --no-check-certificate -qU "$API_UA" --header "Authorization: $api_credentials" --header "Accept-Language: $API_LANG" "$API_URL/downloads/updates?app=$app&category=$cat" -O -)
+        response=$(/data/adb/magisk/busybox wget --no-check-certificate -qU "$API_UA" --header "Authorization: $api_credentials" --header "Accept-Language: $API_LANG" "$__api_url/downloads/updates?app=$app&category=$cat" -O -)
+        if test $? -ne 0; then
+            handleError
+            updateChecker "$cat"
+        fi
         sleep $sleep
         # shellcheck disable=SC2001
         response=$(parseJSON "$response" "version")
@@ -230,11 +235,10 @@ getChecksum() {
         local file=$2
         local format=$3
         local app=$MODULE_CODENAME
-        res=$(/data/adb/magisk/busybox wget --no-check-certificate -qU "$API_UA" --header "Authorization: $api_credentials" --header "Accept-Language: $API_LANG" "$API_URL/checksum/get?app=$app&category=$cat&request=$file&format=$format" -O -)
+        res=$(/data/adb/magisk/busybox wget --no-check-certificate -qU "$API_UA" --header "Authorization: $api_credentials" --header "Accept-Language: $API_LANG" "$__api_url/checksum/get?app=$app&category=$cat&request=$file&format=$format" -O -)
         if test $? -ne 0; then
-            api_log 'ERROR' "Couldn't contact API. Is it offline or blocked?"
-            echo "API request failed! Assuming API is down and aborting!"
-            abort
+            handleError
+            getChecksum "$cat" "$file" "$format"
         fi
         sleep $sleep
         response=$(parseJSON "$res" 'checksum')

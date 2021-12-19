@@ -1,5 +1,7 @@
 # shellcheck shell=ash
 
+# This file is a wrapper around functions-real.sh so we can switch to bash
+
 # Pretty banner
 do_banner() {
   echo "=========================================="

@@ -76,7 +76,6 @@ it_failed() {
     echo -e "${R} ⓧ ERROR ⓧ ⓧ ERROR ⓧ ⓧ ERROR ⓧ ⓧ ERROR ⓧ ⓧ ERROR ⓧ${N}"
     echo -e "$div"
   fi
-  $MODDIR/sentry send-event -m "Script failed" --logfile $LOGFILE
   sleep 4
   menu_set
 }
@@ -364,7 +363,7 @@ cp -fr $OLDMODDIR/* $MODDIR
 
 # Log <level> <message>
 log() {
-  echo "$(date +%c) $2" >>$LOGFILE
+  echo "$2" >>$LOGFILE
 }
 
 # Initialize logging
@@ -372,22 +371,14 @@ setup_logger() {
   LOGFILE=$EXT_DATA/logs/script.log
   export LOGFILE
   {
-    echo "$(date +%c) Module: FontManager $(grep 'version=' $MODPATH/module.prop | cut -d"=" -f2)"
-    echo "$(date +%c) Device: $BRAND $MODEL ($DEVICE)"
-    echo "$(date +%c) ROM: $ROM, sdk$API"
+    echo "Module: FontManager $(grep 'version=' $MODPATH/module.prop | cut -d"=" -f2)"
+    echo "Device: $BRAND $MODEL ($DEVICE)"
+    echo "ROM: $ROM, sdk $API"
   } >$LOGFILE
   if test -f /sdcard/.androidacy-debug; then
     set -x 2
-    exec 2>>"$LOGFILE-debug"
+    exec 2>$EXT_DATA/logs/script-debug.log
   fi
-  # Initialize sentry
-  # First, setup the common/tools/sentry-$ARCH
-  # Now, setup the environment
-  export SENTRY_DSN='https://4bf28f04fb534811902b9e24967b168e@o993586.ingest.sentry.io/6098964'
-  export SENTRY_PIPELINE="FontManager Script"
-  export DEVICE_FAMILY=$BRAND
-  export DEVICE_MODEL=$MODEL
-  eval "$($MODPATH/tools/sentry bash-hook)"
 }
 
 setup_logger

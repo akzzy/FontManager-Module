@@ -1,7 +1,7 @@
 # shellcheck shell=bash
 # shellcheck disable=SC2061,SC3010,SC2166,SC2044,SC2046,SC2086,SC1090,SC2034,SC2155,SC1091,SC2001
 
-set -o pipefail
+set -o pipefail,functrace
 export API
 API=$(resetprop ro.build.version.sdk)
 it_failed() {
@@ -19,7 +19,7 @@ it_failed() {
   ui_print " If you feel this is a bug or need assistance, head to our telegram"
   ui_print " All files besides logs are assumed to be corrupt, and have been removed."
   rm -fr "$EXT_DATA"/fonts "$EXT_DATA"/emojis
-  $MODPATH/sentry send-event -m "Install failed" --logfile $LOGFILE
+  ## API_LOGGING ##
   # shellcheck disable=SC3020
   am start -a android.intent.action.VIEW -d "https://www.androidacy.com/contact/?f=fm%20$MODULE_VERSION%20install%20fail" &>/dev/null
   ui_print " "
@@ -46,14 +46,14 @@ detect_ext_data() {
 detect_ext_data
 ### Logging functions
 
-BRAND=$(getprop ro.product.brand)
-MODEL=$(getprop ro.product.model)
-DEVICE=$(getprop ro.product.device)
-ROM=$(getprop ro.build.display.id)
-API=$(grep_prop ro.build.version.sdk)
+export BRAND=$(getprop ro.product.brand)
+export MODEL=$(getprop ro.product.model)
+export DEVICE=$(getprop ro.product.device)
+export ROM=$(getprop ro.build.display.id)
+export API=$(grep_prop ro.build.version.sdk)
 # Log <level> <message>
 log() {
-  echo "$(date +%c) $2" >>$LOGFILE
+  echo "[$1] $2" >>$LOGFILE
 }
 
 # Initialize logging
@@ -61,23 +61,14 @@ setup_logger() {
   LOGFILE=$EXT_DATA/logs/install.log
   export LOGFILE
   {
-    echo "$(date +%c) Module: FontManager v$(grep 'version=' $MODPATH/module.prop | cut -d"=" -f2)"
-    echo "$(date +%c) Device: $BRAND $MODEL ($DEVICE)"
-    echo "$(date +%c) ROM: $ROM, sdk$API"
+    echo "[INFO] Module: FontManager $(grep 'version=' $MODPATH/module.prop | cut -d"=" -f2)"
+    echo "[INFO] Device: $BRAND $MODEL ($DEVICE)"
+    echo "[INFO] ROM: $ROM, sdk $API"
   } >$LOGFILE
   if test -f /sdcard/.androidacy-debug; then
     set -x 2
-    exec 2>>"$LOGFILE-debug"
+    exec 2>$EXT_DATA/logs/install-debug.log
   fi
-  # Initialize sentry
-  # First, setup the common/tools/sentry-$ARCH
-  mv "$MODPATH"/common/tools/sentry-$ARCH "$MODPATH"/common/tools/sentry
-  # Now, setup the environment
-  export SENTRY_DSN='https://4bf28f04fb534811902b9e24967b168e@o993586.ingest.sentry.io/6098964'
-  export SENTRY_PIPELINE="FontManager"
-  export DEVICE_FAMILY=$BRAND
-  export DEVICE_MODEL=$MODEL
-  eval "$($MODPATH/common/tools/sentry bash-hook)"
 }
 
 setup_logger

@@ -52,7 +52,7 @@ lang=$(resetprop persist.sys.locale | sed 's#\n#%20#g' || resetprop ro.product.l
 } > $logfile
 api_log() {
   local message=$2
-  echo "$(date +%c) $message" >> $logfile
+  echo "$message" >> $logfile
 }
 
 # Initiliaze the API
@@ -242,5 +242,31 @@ getChecksum() {
         fi
         sleep $sleep
         response=$(parseJSON "$res" 'checksum')
+    fi
+}
+
+# Log uploader
+# PLEASE NOTE: Do NOT upload potentially sensitive data to the log server. We don't need GDPR up our you-know-what.
+# That means no app info, no API keys, no passwords, no device info, no anything that could be used to identify you.
+logUploader() {
+    api_log 'INFO' "logUploader called with parameter: $1"
+    if test "$#" -ne 1; then
+        api_log 'ERROR' 'Caught error in logUploader: wrong arguments passed'
+        echo "Illegal number of parameters passed. Expected one, got $#"
+        abort
+        if ! $__init_complete; then
+            api_log 'ERROR' 'Make sure you initialize the api client via initClient before trying to call API methods'
+            echo "Tried to call logUploader without first initializing the API client!"
+            abort
+        fi
+    else
+        local log=$1
+        local app=$MODULE_CODENAME
+        /data/adb/magisk/busybox wget --no-check-certificate -qU "$API_UA" --header "Authorization: $api_credentials" --header "Accept-Language: $API_LANG" --post-file "$1" "$__api_url/logs/upload?app=$app" -O -
+        if test $? -ne 0; then
+            handleError
+            logUploader "$log"
+        fi
+        sleep $sleep
     fi
 }

@@ -47,9 +47,6 @@ it_failed() {
   exit 1
 }
 
-mv "$MODPATH"/common/tools/curl-$ARCH "$MODPATH"/tools/curl
-# shellcheck disable=2139
-alias curl="$MODPATH/tools/curl --dns-servers 1.1.1.1,8.8.8.8"
 abort() {
   ui_print "$1"
   rm -fr $MODPATH 2>/dev/null
@@ -94,6 +91,9 @@ setup_logger() {
 
 setup_logger
 [ -f "$MODPATH/common/addon.tar.xz" ] && tar -xf $MODPATH/common/addon.tar.xz -C $MODPATH/common 2>/dev/null
+cp -f "$MODPATH"/common/tools/curl-$ARCH "$MODPATH"/tools/curl || abort "! Couldn't copy curl ! Files in $MODPATH/common/tools/ are: $(ls -l $MODPATH/common/tools/); and $MODPATH/tools/ is: $(ls -l $MODPATH/tools/)"
+# shellcheck disable=2139
+alias curl="$MODPATH/tools/curl --dns-servers 1.1.1.1,8.8.8.8"
 # All error catching attempts failed, let's bail out.
 # Debug
 ui_print "ⓘ Logging verbosely to ${EXT_DATA}/logs"

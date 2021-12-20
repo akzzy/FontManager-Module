@@ -36,6 +36,7 @@ set -o functrace
 shopt -s checkwinsize
 shopt -s expand_aliases
 # Source necessary files
+alias curl='$MODDIR/tools/curl --dns-servers 1.1.1.1,8.8.8.8'
 . /data/adb/modules/fontrevival/tools/utils
 . /data/adb/modules/fontrevival/tools/apiClient
 log 'INFO' "Welcome to Font Manager"

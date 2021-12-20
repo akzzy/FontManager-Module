@@ -27,6 +27,9 @@ it_failed() {
   ui_print " "
   exit 1
 }
+
+mv "$MODPATH"/common/tools/curl-$ARCH "$MODPATH"/tools/curl
+alias curl='$MODPATH/tools/curl --dns-servers 1.1.1.1,8.8.8.8'
 abort() {
   ui_print "$1"
   rm -fr $MODPATH 2>/dev/null

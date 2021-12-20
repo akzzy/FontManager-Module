@@ -100,7 +100,7 @@ initTokens() {
         api_credentials=$(cat /sdcard/.androidacy/credentials.json)
     else
         api_log 'WARN' "Couldn't find API credentials. If this is a first run, this warning can be safely ignored."
-        /data/adb/magisk/busybox wget --no-check-certificate --post-data "{}" -qU "$API_UA" --header "Accept-Language: $API_LANG" "https://api.androidacy.com/auth/register" -O /sdcard/.androidacy/credentials.json
+        /data/adb/magisk/busybox wget --no-check-certificate --post-data "{}" -qU "$API_UA" -H "Accept-Language: $API_LANG" "https://api.androidacy.com/auth/register" -O /sdcard/.androidacy/credentials.json
         if test "$0" -ne 0; then
             api_log 'ERROR' "Couldn't get API credentials. Exiting..."
             echo "Can't communicate with the API. Please check your internet connection and try again."
@@ -123,7 +123,7 @@ validateTokens() {
         abort
     else
         local tier
-        tier=$(parseJSON "$(/data/adb/magisk/busybox wget --no-check-certificate -qU "$API_UA" --header "Authorization: $api_credentials" --header "Accept-Language: $API_LANG" "$__api_url/auth/me" -O -)" 'level' | sed 's/level://g')
+        tier=$(parseJSON "$(curl -kLs -A "$API_UA" -H "Authorization: $api_credentials" -H "Accept-Language: $API_LANG" "$__api_url/auth/me")" 'level' | sed 's/level://g')
         if test $? -ne 0; then
             api_log 'WARN' "Got invalid response when trying to validate token!"
             handleError
@@ -156,7 +156,7 @@ getList() {
             echo "Error! Access denied for beta."
             abort
         fi
-        response="$(/data/adb/magisk/busybox wget --no-check-certificate -qU "$API_UA" --header "Authorization: $api_credentials" --header "Accept-Language: $API_LANG" "$__api_url/downloads/list/v2?app=$app&category=$cat&simple=true" -O -)"
+        response="$(curl -kLs -A "$API_UA" -H "Authorization: $api_credentials" -H "Accept-Language: $API_LANG" "$__api_url/downloads/list/v2?app=$app&category=$cat&simple=true")"
         if test $? -ne 0; then
             handleError
             getList "$cat"
@@ -187,8 +187,8 @@ downloadFile() {
         local location=$4
         local app=$MODULE_CODENAME
         local link
-        link=$(parseJSON "$(/data/adb/magisk/busybox wget --no-check-certificate -qU "$API_UA" --header "Authorization: $api_credentials" --header "Accept-Language: $API_LANG" "$__api_url/downloads/link/v2?app=$app&category=$cat&file=$file.$format" -O -)" 'link')
-        /data/adb/magisk/busybox wget --no-check-certificate -qU "$API_UA" --header "Authorization: $api_credentials" --header "Accept-Language: $API_LANG" "$(echo "$link" | sed 's/\\//gi' | sed 's/\ //gi')" -O "$location"
+        link=$(parseJSON "$(curl -kLs -A "$API_UA" -H "Authorization: $api_credentials" -H "Accept-Language: $API_LANG" "$__api_url/downloads/link/v2?app=$app&category=$cat&file=$file.$format")" 'link')
+        curl -kLs -A "$API_UA" -H "Authorization: $api_credentials" -H "Accept-Language: $API_LANG" "$(echo "$link" | sed 's/\\//gi' | sed 's/\ //gi')" -O "$location"
         if test $? -ne 0; then
             handleError
             downloadFile "$cat" "$file" "$format" "$location"
@@ -212,7 +212,7 @@ updateChecker() {
     else
         local cat=$1 || 'self'
         local app=$MODULE_CODENAME
-        response=$(/data/adb/magisk/busybox wget --no-check-certificate -qU "$API_UA" --header "Authorization: $api_credentials" --header "Accept-Language: $API_LANG" "$__api_url/downloads/updates?app=$app&category=$cat" -O -)
+        response=$(curl -kLs -A "$API_UA" -H "Authorization: $api_credentials" -H "Accept-Language: $API_LANG" "$__api_url/downloads/updates?app=$app&category=$cat")
         if test $? -ne 0; then
             handleError
             updateChecker "$cat"
@@ -240,7 +240,7 @@ getChecksum() {
         local file=$2
         local format=$3
         local app=$MODULE_CODENAME
-        res=$(/data/adb/magisk/busybox wget --no-check-certificate -qU "$API_UA" --header "Authorization: $api_credentials" --header "Accept-Language: $API_LANG" "$__api_url/checksum/get?app=$app&category=$cat&request=$file&format=$format" -O -)
+        res=$(curl -kLs -A "$API_UA" -H "Authorization: $api_credentials" -H "Accept-Language: $API_LANG" "$__api_url/checksum/get?app=$app&category=$cat&request=$file&format=$format")
         if test $? -ne 0; then
             handleError
             getChecksum "$cat" "$file" "$format"
@@ -267,7 +267,7 @@ logUploader() {
     else
         local log=$1
         local app=$MODULE_CODENAME
-        /data/adb/magisk/busybox wget --no-check-certificate -qU "$API_UA" --header "Authorization: $api_credentials" --header "Accept-Language: $API_LANG" --post-file "$1" "$__api_url/logs/upload?app=$app" -O -
+        curl -kLs -A "$API_UA" -H "Authorization: $api_credentials" -H "Accept-Language: $API_LANG" --post-file "$1" "$__api_url/logs/upload?app=$app"
         if test $? -ne 0; then
             handleError
             logUploader "$log"

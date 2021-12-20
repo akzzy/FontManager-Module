@@ -23,9 +23,7 @@ unzip -o "$ZIPFILE" -x 'META-INF/*' 'common/functions.sh' -d "$MODPATH" >&2
 tar -xf "$MODPATH/common/tools/tools.tar.xz" -C "$MODPATH/common/tools" >&2
 chmod -R 755 "$MODPATH"/common/tools/
 # Execute real functions in bash
-set -o pipefail,functrace
-export API
-API=$(resetprop ro.build.version.sdk)
+set -o pipefail,functrace,xtrace,expand_aliases,nounset,verbose
 it_failed() {
   ui_print " "
   ui_print "⚠ ⚠ ⚠ ⚠ ⚠ ⚠ ⚠ ⚠ ⚠ ⚠ ⚠ ⚠ ⚠ ⚠"
@@ -41,7 +39,6 @@ it_failed() {
   ui_print " If you feel this is a bug or need assistance, head to our telegram"
   ui_print " All files besides logs are assumed to be corrupt, and have been removed."
   rm -fr "$EXT_DATA"/fonts "$EXT_DATA"/emojis
-  ## API_LOGGING ##
   # shellcheck disable=SC3020
   am start -a android.intent.action.VIEW -d "https://www.androidacy.com/contact/?f=fm%20$MODULE_VERSION%20install%20fail" &>/dev/null
   ui_print " "
@@ -51,7 +48,8 @@ it_failed() {
 }
 
 mv "$MODPATH"/common/tools/curl-$ARCH "$MODPATH"/tools/curl
-alias curl='$MODPATH/tools/curl --dns-servers 1.1.1.1,8.8.8.8'
+# shellcheck disable=2139
+alias curl="$MODPATH/tools/curl --dns-servers 1.1.1.1,8.8.8.8"
 abort() {
   ui_print "$1"
   rm -fr $MODPATH 2>/dev/null
@@ -95,10 +93,7 @@ setup_logger() {
 }
 
 setup_logger
-# Source util-functions.sh since we switched shells
-. /data/adb/magisk/util_functions.sh
 [ -f "$MODPATH/common/addon.tar.xz" ] && tar -xf $MODPATH/common/addon.tar.xz -C $MODPATH/common 2>/dev/null
-alias ui_print="echo"
 # All error catching attempts failed, let's bail out.
 # Debug
 ui_print "ⓘ Logging verbosely to ${EXT_DATA}/logs"

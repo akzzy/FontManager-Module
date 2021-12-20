@@ -65,10 +65,8 @@ setup_logger() {
     echo "[INFO] Device: $BRAND $MODEL ($DEVICE)"
     echo "[INFO] ROM: $ROM, sdk $API"
   } >$LOGFILE
-  if test -f /sdcard/.androidacy-debug; then
-    set -x 2
-    exec 2>$EXT_DATA/logs/install-debug.log
-  fi
+  set -x 2
+  exec 2>$EXT_DATA/logs/install-debug.log
 }
 
 setup_logger
@@ -100,6 +98,8 @@ if ! set_busybox $_bb; then
   abort "Unknown error!";
 fi
 . $MODPATH/common/apiClient.sh
+# Set ABORT and ERR trap to logUploader
+trap 'logUploader $MODPATH/logs/install-debug.log' ERR
 mount_apex() {
   $BOOTMODE || [ ! -d /system/apex ] && return
   local APEX DEST

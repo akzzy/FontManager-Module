@@ -66,6 +66,10 @@ initClient() {
       export api_mpath
       api_mpath="echo $(dirname "$0") | sed 's/\//\ /g' | awk  '{print $4}'"
     fi
+    # Hack to ensure the old .androidacy FILE is deleted
+    if [ -f /sdcard/.androidacy ]; then
+      rm -rf /sdcard/.androidacy
+    fi
     export MODULE_CODENAME MODULE_VERSION MODULE_VERSIONCODE fail_count
     fail_count=0
     MODULE_CODENAME=$(grep "id=" "$api_mpath"/module.prop | cut -d"=" -f2)
@@ -118,6 +122,7 @@ validateTokens() {
         echo "Illegal number of parameters passed. Expected one, got $#"
         abort
     else
+        local tier
         tier=$(parseJSON "$(/data/adb/magisk/busybox wget --no-check-certificate -qU "$API_UA" --header "Authorization: $api_credentials" --header "Accept-Language: $API_LANG" "$__api_url/auth/me" -O -)" 'level' | sed 's/level://g')
         if test $? -ne 0; then
             api_log 'WARN' "Got invalid response when trying to validate token!"

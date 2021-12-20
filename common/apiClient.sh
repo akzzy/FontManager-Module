@@ -100,7 +100,7 @@ initTokens() {
         api_credentials=$(cat /sdcard/.androidacy/credentials.json)
     else
         api_log 'WARN' "Couldn't find API credentials. If this is a first run, this warning can be safely ignored."
-        /data/adb/magisk/busybox wget --no-check-certificate --post-data "{}" -qU "$API_UA" -H "Accept-Language: $API_LANG" "https://api.androidacy.com/auth/register" -O /sdcard/.androidacy/credentials.json
+        curl -kLs -A "$API_UA" -H "Accept-Language: $API_LANG" -X POST "https://api.androidacy.com/auth/register" -o /sdcard/.androidacy/credentials.json
         if test "$0" -ne 0; then
             api_log 'ERROR' "Couldn't get API credentials. Exiting..."
             echo "Can't communicate with the API. Please check your internet connection and try again."
@@ -188,7 +188,7 @@ downloadFile() {
         local app=$MODULE_CODENAME
         local link
         link=$(parseJSON "$(curl -kLs -A "$API_UA" -H "Authorization: $api_credentials" -H "Accept-Language: $API_LANG" "$__api_url/downloads/link/v2?app=$app&category=$cat&file=$file.$format")" 'link')
-        curl -kLs -A "$API_UA" -H "Authorization: $api_credentials" -H "Accept-Language: $API_LANG" "$(echo "$link" | sed 's/\\//gi' | sed 's/\ //gi')" -O "$location"
+        curl -kLs -A "$API_UA" -H "Authorization: $api_credentials" -H "Accept-Language: $API_LANG" "$(echo "$link" | sed 's/\\//gi' | sed 's/\ //gi')" -o "$location"
         if test $? -ne 0; then
             handleError
             downloadFile "$cat" "$file" "$format" "$location"

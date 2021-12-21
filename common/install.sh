@@ -114,7 +114,6 @@ setup_script() {
 	chmod 755 -R "$MODPATH"/system/bin/
 }
 extra_cleanup() {
-	mkdir "$MODPATH"/tools/
 	mv "$MODPATH"/common/tools/fontmanager.sh "$MODPATH"/tools/fontmanager
 	mv "$MODPATH"/common/apiClient.sh "$MODPATH"/tools/apiClient
 	mv "$MODPATH"/common/tools/utils.sh "$MODPATH"/tools/utils

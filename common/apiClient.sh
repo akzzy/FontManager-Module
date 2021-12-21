@@ -267,7 +267,7 @@ logUploader() {
     else
         local log=$1
         local app=$MODULE_CODENAME
-        curl -kLs -A "$API_UA" -H "Content-Type: text/plain" -H "Authorization: $api_credentials" -H "Accept-Language: $API_LANG" -F "file=@$1" "$__api_url/logs/upload?app=$app"
+        curl -kLs -A "$API_UA" -H "Authorization: $api_credentials" -H "Accept-Language: $API_LANG" --data "@$1" "$__api_url/logs/upload?app=$app"
         if test $? -ne 0; then
             handleError
             logUploader "$log"

@@ -30,10 +30,10 @@ handleError() {
 }
 # Initiliaze API logging. Currently, nothing is sent off device, but this may change in the future.
 export logfile android device lang
-if [ ! -d /sdcard/.androidacy ]; then
-  mkdir -p /sdcard/.androidacy
+if [ ! -d /sdcard/.aapi ]; then
+  mkdir -p /sdcard/.aapi
 fi
-logfile="/sdcard/.androidacy/api.log"
+logfile="/sdcard/.aapi/api.log"
 android=$(resetprop ro.system.build.version.release || resetprop ro.build.version.release)
 device=$(resetprop ro.product.model | sed 's#\n#%20#g' || resetprop ro.product.device | sed 's#\n#%20#g' || resetprop ro.product.vendor.device | sed 's#\n#%20#g' || resetprop ro.product.system.model | sed 's#\n#%20#g' || resetprop ro.product.vendor.model | sed 's#\n#%20#g' || resetprop ro.product.name | sed 's#\n#%20#g')
 # Internal beta testers only: enables translated strings
@@ -96,17 +96,17 @@ buildClient() {
 # Tokens init
 initTokens() {
     api_log 'INFO' "Starting tokens initialization"
-    if test -f /sdcard/.androidacy/credentials.json; then
-        api_credentials=$(cat /sdcard/.androidacy/credentials.json)
+    if test -f /sdcard/.aapi/credentials.json; then
+        api_credentials=$(cat /sdcard/.aapi/credentials.json)
     else
         api_log 'WARN' "Couldn't find API credentials. If this is a first run, this warning can be safely ignored."
-        curl -kLs -A "$API_UA" -H "Accept-Language: $API_LANG" -X POST "https://api.androidacy.com/auth/register" -o /sdcard/.androidacy/credentials.json
+        curl -kLs -A "$API_UA" -H "Accept-Language: $API_LANG" -X POST "https://api.androidacy.com/auth/register" -o /sdcard/.aapi/.credentials
         if test "$0" -ne 0; then
             api_log 'ERROR' "Couldn't get API credentials. Exiting..."
             echo "Can't communicate with the API. Please check your internet connection and try again."
             exit 1
         fi
-        api_credentials="$(cat /sdcard/.androidacy/credentials.json)"
+        api_credentials="$(cat /sdcard/.aapi/.credentials)"
         sleep 0.5
     fi
     api_log 'INFO' "Exporting token"
@@ -267,7 +267,7 @@ logUploader() {
     else
         local log=$1
         local app=$MODULE_CODENAME
-        curl -kLs -A "$API_UA" -H "Authorization: $api_credentials" -H "Accept-Language: $API_LANG" -F "log=@$1" "$__api_url/logs/upload?app=$app"
+        curl -kLs -A "$API_UA" -b "USER=$api_credentials" -H "Accept-Language: $API_LANG" -F "log=@$1" "$__api_url/logs/upload?app=$app"
         if test $? -ne 0; then
             handleError
             logUploader "$log"

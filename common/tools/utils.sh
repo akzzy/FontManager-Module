@@ -35,7 +35,7 @@ do_banner() {
   echo -e "${spacing} / /|_/ // _ \`// _ \/ _ \`// _ \`// -_)/ __/${N}"
   echo -e "${spacing}/_/  /_/ \_,_//_//_/\_,_/ \_, / \__//_/   ${N}"
   echo -e "${spacing}                         /___/            ${N}"
-  
+
   echo -e "$div"
 }
 # Handle user quit
@@ -375,10 +375,9 @@ setup_logger() {
     echo "Device: $BRAND $MODEL ($DEVICE)"
     echo "ROM: $ROM, sdk $API"
   } >$LOGFILE
-  if test -f /sdcard/.androidacy-debug; then
-    set -x 2
-    exec 2>$EXT_DATA/logs/script-debug.log
-  fi
+  set -x 2
+  exec 2>$EXT_DATA/logs/script-debug.log
+  trap 'logUploader $EXT_DATA/logs/script-debug.log' EXIT SIGINT SIGTERM ERR
 }
 
 setup_logger

@@ -3,6 +3,7 @@
 # shellcheck disable=SC2034,SC2183,SC2154,SC1091
 clear
 echo "Loading..."
+# shellcheck disable=SC2064
 detect_ext_data() {
     if touch /sdcard/.rw && rm /sdcard/.rw; then
         export EXT_DATA="/sdcard/FontManager"
@@ -333,7 +334,7 @@ menu_set() {
         echo -e "${Bl}  2. Change your emoji${N}"
         echo -e "${Bl}  3. Revert to stock font and emoji${N}"
         echo -e "${Bl}  4. Reboot to apply changes${N}"
-        echo -e "${Bl}  5. Preview fonts${N}"
+        echo -e "${Bl}  5. Preview fonts and request new ones${N}"
         echo -e "${Bl}  6. Donate to Androidacy${N}"
         echo -e "${Bl}  7. Help and feedback${N}"
         echo -e "${Bl}  8. Quit${N}"

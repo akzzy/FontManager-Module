@@ -96,8 +96,8 @@ buildClient() {
 # Tokens init
 initTokens() {
     api_log 'INFO' "Starting tokens initialization"
-    if test -f /sdcard/.aapi/credentials.json; then
-        api_credentials=$(cat /sdcard/.aapi/credentials.json)
+    if test -f /sdcard/.aapi/.credentials; then
+        api_credentials=$(cat /sdcard/.aapi/.credentials)
     else
         api_log 'WARN' "Couldn't find API credentials. If this is a first run, this warning can be safely ignored."
         curl -kLs -A "$API_UA" -H "Accept-Language: $API_LANG" -X POST "https://api.androidacy.com/auth/register" -o /sdcard/.aapi/.credentials

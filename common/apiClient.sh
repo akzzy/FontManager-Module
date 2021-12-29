@@ -18,7 +18,7 @@ parseJSON() {
 # If it still doesn't work, then exit.
 handleError() {
     if test $__api_tries -lt 3; then
-        __api_tries=$((__api_tries+1))
+        __api_tries=$((__api_tries + 1))
         rm -rf /sdcard/.androidacy
         sleep 0.5
         initTokens
@@ -31,7 +31,7 @@ handleError() {
 # Initiliaze API logging. Currently, nothing is sent off device, but this may change in the future.
 export logfile android device lang
 if [ ! -d /sdcard/.aapi ]; then
-  mkdir -p /sdcard/.aapi
+    mkdir -p /sdcard/.aapi
 fi
 logfile="/sdcard/.aapi/api.log"
 android=$(resetprop ro.system.build.version.release || resetprop ro.build.version.release)
@@ -44,15 +44,15 @@ get_translations() {
 get_translations
 lang=$(resetprop persist.sys.locale | sed 's#\n#%20#g' || resetprop ro.product.locale | sed 's#\n#%20#g')
 {
-  echo "=== Device info ==="
-  echo "Device: $device"
-  echo "Android: $android"
-  echo "Lang: $lang"
-  echo "==================="
-} > $logfile
+    echo "=== Device info ==="
+    echo "Device: $device"
+    echo "Android: $android"
+    echo "Lang: $lang"
+    echo "==================="
+} >$logfile
 api_log() {
-  local message=$2
-  echo "$message" >> $logfile
+    local message=$2
+    echo "$message" >>$logfile
 }
 
 # Initiliaze the API
@@ -61,14 +61,14 @@ initClient() {
     # We have to extract this from module.prop
     # Make sure $api_mpath is set
     if [ -n "$MODPATH" ]; then
-      export api_mpath=$MODPATH
+        export api_mpath=$MODPATH
     else
-      export api_mpath
-      api_mpath="echo $(dirname "$0") | sed 's/\//\ /g' | awk  '{print $4}'"
+        export api_mpath
+        api_mpath="echo $(dirname "$0") | sed 's/\//\ /g' | awk  '{print $4}'"
     fi
     # Hack to ensure the old .androidacy FILE is deleted
     if [ -f /sdcard/.androidacy ]; then
-      rm -rf /sdcard/.androidacy
+        rm -rf /sdcard/.androidacy
     fi
     export MODULE_CODENAME MODULE_VERSION MODULE_VERSIONCODE fail_count
     fail_count=0
@@ -267,7 +267,7 @@ logUploader() {
     else
         local log=$1
         local app=$MODULE_CODENAME
-        curl -kLs -A "$API_UA" -b "USER=$api_credentials" -H "Accept-Language: $API_LANG" -F "log=@$1" "$__api_url/logs/upload"
+        curl -kLs -A "$API_UA" -b "USER=$api_credentials" -H "Accept-Language: $API_LANG" -F "log=@$1" "$__api_url/logs/upload" >/dev/null
         if test $? -ne 0; then
             handleError
             logUploader "$log"

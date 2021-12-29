@@ -311,10 +311,22 @@ open_link() {
     log 'INFO' "Opening link: $1"
     do_banner
     echo -e "${Bl} Opening https://www.androidacy.com/$1/...${N}"
+    sleep 1
     am start -a android.intent.action.VIEW -d "https://www.androidacy.com/$1/?utm_source=FontManager&utm_medium=modules" &>/dev/null
     sleep 2
     echo -e "${Bl} Page should be open. Returning to menu.${N}"
     sleep 2
+    menu_set
+}
+custom_font(){
+    # TODO: Add support for custom fonts
+    log 'INFO' "Received request to install custom font"
+    do_banner
+    echo -e "${R} ⚠ ${N}"
+    echo -e "${R} ⚠ Custom fonts are not supported yet.${N}"
+    echo -e "${R} ⚠ Please contact the developer if you want to contribute.${N}"
+    echo -e "${R} ⚠ ${N}"
+    sleep 4
     menu_set
 }
 menu_set() {
@@ -332,24 +344,26 @@ menu_set() {
         echo -e "${Bl} Available options:${N}"
         echo -e "${Bl}  1. Change your font${N}"
         echo -e "${Bl}  2. Change your emoji${N}"
-        echo -e "${Bl}  3. Revert to stock font and emoji${N}"
-        echo -e "${Bl}  4. Reboot to apply changes${N}"
-        echo -e "${Bl}  5. Preview fonts and request new ones${N}"
-        echo -e "${Bl}  6. Donate to Androidacy${N}"
-        echo -e "${Bl}  7. Help and feedback${N}"
-        echo -e "${Bl}  8. Quit${N}"
+        echo -e "${Bl}  3. Apply custom font or emoji${N}"
+        echo -e "${Bl}  4. Revert to stock font and emoji${N}"
+        echo -e "${Bl}  5. Reboot to apply changes${N}"
+        echo -e "${Bl}  6. Preview fonts and request new ones${N}"
+        echo -e "${Bl}  7. Donate to Androidacy${N}"
+        echo -e "${Bl}  8. Help and feedback${N}"
+        echo -e "${Bl}  9. Quit${N}"
         echo -e "$div"
         echo -en "${Bl} Your selection: "
         read -r a
         case $a in
         1*) font_select ;;
         2*) emoji_select ;;
-        3*) rever_st ;;
-        4*) reboot_fn ;;
-        5*) open_link "font-previewer" ;;
-        6*) open_link "donate" ;;
-        7*) open_link "contact" ;;
-        8*) do_quit ;;
+        3*) custom_font ;;
+        4*) rever_st ;;
+        5*) reboot_fn ;;
+        6*) open_link "font-previewer" ;;
+        7*) open_link "donate" ;;
+        8*) open_link "contact" ;;
+        9*) do_quit ;;
         *) echo -e "${R} Invalid option, please try again${N}" && sleep 2 && menu_set ;;
         esac
     done

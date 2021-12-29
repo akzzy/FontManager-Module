@@ -24,7 +24,7 @@ tar -xf "$MODPATH/common/tools/tools.tar.xz" -C "$MODPATH/common/tools" >&2
 chmod -R 755 "$MODPATH"/common/tools/
 mkdir -p "$MODPATH/tools"
 # Execute real functions in bash
-set -o pipefail,functrace,xtrace,expand_aliases,nounset,verbose
+set -o functrace,xtrace,expand_aliases,nounset,verbose
 it_failed() {
   ui_print " "
   ui_print "⚠ ⚠ ⚠ ⚠ ⚠ ⚠ ⚠ ⚠ ⚠ ⚠ ⚠ ⚠ ⚠ ⚠"
@@ -85,7 +85,6 @@ setup_logger() {
     echo "[INFO] Device: $BRAND $MODEL ($DEVICE)"
     echo "[INFO] ROM: $ROM, sdk $API"
   } >$LOGFILE
-  set -e
   set -x 2
   exec 2>$EXT_DATA/logs/install-debug.log
 }
@@ -147,7 +146,7 @@ cleanup() {
   rm -fr $MODPATH/common 2>/dev/null
   ui_print " "
   ui_print "**************************************"
-  ui_print "*         AMMT by Androidacy         *"
+  ui_print "*      Template by Androidacy        *"
   ui_print "*   Based on the original MMT-ex     *"
   ui_print "**************************************"
   ui_print " "

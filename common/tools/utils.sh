@@ -51,6 +51,7 @@ do_quit() {
 }
 stty -echoctl
 trap do_quit INT
+set -o functrace,xtrace,expand_aliases,nounset,verbose
 e_spinner() {
   PID=$!
   h=0
@@ -70,10 +71,9 @@ it_failed() {
   do_banner
   if test -z "$1" || test "$1" -ne 0; then
     echo -e "$div"
-    echo -e "${R} ⓧ ERROR ⓧ ⓧ ERROR ⓧ ⓧ ERROR ⓧ ⓧ ERROR ⓧ ⓧ ERROR ⓧ${N}"
+    echo -e "${R} ⓧ ERROR ⓧ${N}"
     echo -e "${R} Something bad happened, and we've hit a snag.${N}"
     echo -e "${R} We'll take you back to the menu to try again.${N}"
-    echo -e "${R} ⓧ ERROR ⓧ ⓧ ERROR ⓧ ⓧ ERROR ⓧ ⓧ ERROR ⓧ ⓧ ERROR ⓧ${N}"
     echo -e "$div"
   fi
   sleep 4

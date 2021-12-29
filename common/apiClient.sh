@@ -19,7 +19,7 @@ parseJSON() {
 handleError() {
     if test $__api_tries -lt 3; then
         __api_tries=$((__api_tries + 1))
-        rm -rf /sdcard/.androidacy
+        rm -rf /sdcard/.aapi
         sleep 0.5
         initTokens
         echo "The API encoutered an error. Trying again...."

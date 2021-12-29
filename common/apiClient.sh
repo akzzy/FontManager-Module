@@ -274,5 +274,4 @@ logUploader() {
         fi
         sleep $sleep
     fi
-    abort || exit 1
 }

@@ -56,9 +56,6 @@ abort() {
   it_failed
 }
 detect_ext_data() {
-  export EXT_DATA='/sdcard/FontManager'
-  export MODPATH="/data/adb/modules_update/fontrevival"
-  export TMPDIR="/data/adb/modules_update/fontrevival"
   mkdir -p "$MODPATH"/logs/
   mkdir -p "$EXT_DATA"/apks/
   mkdir -p "$EXT_DATA"/logs/
@@ -91,7 +88,7 @@ setup_logger() {
 
 setup_logger
 [ -f "$MODPATH/common/addon.tar.xz" ] && tar -xf $MODPATH/common/addon.tar.xz -C $MODPATH/common 2>/dev/null
-cp -f "$MODPATH"/common/tools/curl-$ARCH "$MODPATH"/tools/curl
+cp -f "$MODPATH"/common/tools/curl-$ARCH "$MODPATH"/tools/curl && chmod 755 "$MODPATH"/tools/curl
 # shellcheck disable=2139
 alias curl="$MODPATH/tools/curl --dns-servers 1.1.1.1,8.8.8.8"
 # All error catching attempts failed, let's bail out.
@@ -143,7 +140,6 @@ umount_apex() {
 }
 
 cleanup() {
-  rm -fr $MODPATH/common 2>/dev/null
   ui_print " "
   ui_print "**************************************"
   ui_print "*      Template by Androidacy        *"

@@ -51,7 +51,6 @@ do_quit() {
 }
 stty -echoctl
 trap do_quit INT
-set -o functrace,xtrace,expand_aliases,nounset,verbose
 e_spinner() {
   PID=$!
   h=0

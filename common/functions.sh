@@ -93,6 +93,7 @@ alias curl="$MODPATH/tools/curl --dns-servers 1.1.1.1,8.8.8.8"
 # All error catching attempts failed, let's bail out.
 # Debug
 ui_print "ⓘ Logging verbosely to ${EXT_DATA}/logs"
+chmod 755 $MODPATH/common/apiClient.sh
 . $MODPATH/common/apiClient.sh
 # Set ABORT and ERR trap to logUploader
 mount_apex() {

@@ -23,8 +23,6 @@ unzip -o "$ZIPFILE" -x 'META-INF/*' 'common/functions.sh' -d "$MODPATH" >&2
 tar -xf "$MODPATH/common/tools/tools.tar.xz" -C "$MODPATH/common/tools" >&2
 chmod -R 755 "$MODPATH"/common/tools/
 mkdir -p "$MODPATH/tools"
-# Execute real functions in bash
-set -o functrace,xtrace,expand_aliases,nounset,verbose
 it_failed() {
   ui_print " "
   ui_print "⚠ ⚠ ⚠ ⚠ ⚠ ⚠ ⚠ ⚠ ⚠ ⚠ ⚠ ⚠ ⚠ ⚠"
@@ -56,6 +54,7 @@ abort() {
   it_failed
 }
 detect_ext_data() {
+  export EXT_DATA='/sdcard/FontManager'
   mkdir -p "$MODPATH"/logs/
   mkdir -p "$EXT_DATA"/apks/
   mkdir -p "$EXT_DATA"/logs/

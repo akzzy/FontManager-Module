@@ -133,6 +133,8 @@ font_select() {
             fi
         fi
         unzip -o "$RESULTF" -d "$MODDIR/system/fonts" &>/dev/null
+        # Workaround for android 12, experimental
+        rm -fr /data/fonts/*
         set_perm_recursive 644 root root 0 "$MODDIR"/system/fonts/*
         if test -d /product/fonts; then
             mkdir -p "$MODDIR"/system/product/fonts

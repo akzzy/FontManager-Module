@@ -42,6 +42,13 @@ alias curl='$MODDIR/tools/curl --dns-servers 1.1.1.1,8.8.8.8'
 . /data/adb/modules/fontrevival/tools/apiClient
 log 'INFO' "Welcome to Font Manager"
 initClient
+if test "$GUI" == 1; then
+    log 'INFO' "Running in GUI mode"
+    echo "GUI mode is not supported in production builds"
+    exit 1
+else
+    log 'INFO' "Running in CLI mode"
+fi
 # shellcheck disable=SC2154
 if test -n "${ANDROID_SOCKET_adbd}"; then
     log 'ERROR' "Cannot run via adb"
@@ -64,10 +71,15 @@ font_select() {
     clear
     do_banner
     sleep 0.5
-    echo -e "${Bl} Font changer selected. Please type the appropriate number when prompted.${N}"
-    echo -e "${Bl} Proceeding to selection screen...${N}"
+    echo -e "${Bl} Font changer selected.${N}"
+    echo -e "${B} USAGE:${N}"
+    echo -e "${B} <number>: Selects that font${N}"
+    echo -e "${B} <enter/return>: Shows more fonts${N}"
+    echo -e "${B} x: goes back to main menu${N}"
+    echo -e "${B} q: quits${N}"
+    echo -e "${Bl} Press enter/return to continue${N}"
     echo -e "$div"
-    sleep 3
+    read -r -p "> " -n 1 -s
     LINESTART=1
     print_list() {
         do_banner
@@ -121,13 +133,13 @@ font_select() {
             menu_set
             return
         else
-            O_S=$(md5sum "$RESULTF" | sed "s/\ \/.*//" | tr -d '[:space:]')
+            O_S=$(/data/adb/magisk/busybox sha256sum "$RESULTE" | sed "s/\ \/.*//" | tr -d '[:space:]')
             getChecksum 'fonts' "$choice" 'zip'
             T_S=$(echo "$response" | tr -d '[:space:]')
             if [ "$T_S" != "$O_S" ]; then
                 echo -e "${R}Downloaded file corrupt. The font was not installed.${N}"
                 echo -e "${R}Returning to main menu in three seconds${N}"
-                pkill -f wget
+                pkill -f curl
                 sleep 3
                 menu_set
             fi
@@ -162,9 +174,14 @@ emoji_select() {
     do_banner
     sleep 0.5
     echo -e "${Bl} Emoji changer selected. Please type the appropriate number when prompted.${N}"
-    echo -e "${Bl} Proceeding to selection screen...${N}"
+    echo -e "${B} USAGE:${N}"
+    echo -e "${B} <number>: Selects that font${N}"
+    echo -e "${B} <enter/return>: Shows more fonts${N}"
+    echo -e "${B} x: goes back to main menu${N}"
+    echo -e "${B} q: quits${N}"
+    echo -e "${Bl} Press enter/return to continue${N}"
     echo -e "$div"
-    sleep 3
+    read -r -p "> " -n 1 -s
     LINESTART=1
     print_list() {
         do_banner
@@ -213,18 +230,18 @@ emoji_select() {
         if [ ! -f "$RESULTE" ]; then
             echo -e "${R} Downloaded file not found. The emoji set was not installed.${N}"
             echo -e "${R} Returning to main menu in three seconds ${N}"
-            pkill -f wget
+            pkill -f curl
             sleep 3
             menu_set
             return
         else
-            O_S=$(md5sum "$RESULTE" | sed "s/\ \/.*//" | tr -d '[:space:]')
+            O_S=$(/data/adb/magisk/busybox sha256sum "$RESULTE" | sed "s/\ \/.*//" | tr -d '[:space:]')
             getChecksum 'emojis' "$choice" 'zip'
             T_S=$(echo "$response" | tr -d '[:space:]')
             if [ "$T_S" != "$O_S" ]; then
                 echo -e "${R} Downloaded file corrupt. The emoji set was not installed.${N}"
                 echo -e "${R} Returning to main  menu in three seconds ${N}"
-                pkill -f wget
+                pkill -f curl
                 sleep 3
                 menu_set
                 return
@@ -320,14 +337,27 @@ open_link() {
     sleep 2
     menu_set
 }
-custom_font(){
+custom_font() {
     # TODO: Add support for custom fonts
     log 'INFO' "Received request to install custom font"
     do_banner
-    echo -e "${R} ⚠ ${N}"
-    echo -e "${R} ⚠ Custom fonts are not supported yet.${N}"
-    echo -e "${R} ⚠ Please contact the developer if you want to contribute.${N}"
-    echo -e "${R} ⚠ ${N}"
+    local custFontLoc="$EXT_DATA/custom_fonts"
+    if test -d "$custFontLoc"; then
+        echo -e "${R} ⚠ ${N}"
+        echo -e "${R} ⚠ Custom fonts are not supported yet.${N}"
+        echo -e "${R} ⚠ Please contact the developer if you want to contribute.${N}"
+        echo -e "${R} ⚠ ${N}"
+        sleep 4
+        menu_set
+    else
+        mkdir -p "$custFontLoc"
+        echo -e "${R} ⚠ ${N}"
+        echo -e "${R} ⚠ Custom fonts are not supported yet.${N}"
+        echo -e "${R} ⚠ Please contact the developer if you want to contribute.${N}"
+        echo -e "${R} ⚠ ${N}"
+        sleep 4
+        menu_set
+    fi
     sleep 4
     menu_set
 }
@@ -340,8 +370,8 @@ menu_set() {
                 echo "stock" >$MODDIR/c$i
             fi
         done
-        echo -e "${Bl} Current font is $(cat $MODDIR/cfont)${N}"
-        echo -e "${Bl} Current emoji is $(cat $MODDIR/cemoji)${N}"
+        echo -e "${Bl} Current font: $(cat $MODDIR/cfont)${N}"
+        echo -e "${Bl} Current emoji: $(cat $MODDIR/cemoji)${N}"
         echo -e "$div"
         echo -e "${Bl} Available options:${N}"
         echo -e "${Bl}  1. Change your font${N}"

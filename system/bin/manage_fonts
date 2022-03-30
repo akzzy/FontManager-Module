@@ -1,1 +1,10 @@
-NR=true /data/adb/modules/fontrevival/tools/bash /data/adb/modules/fontrevival/tools/fontmanager
+#!/data/adb/magisk/busybox ash
+# See if --gui is specified
+if [ "$1" = "--gui" ]; then
+    # If so, run the GUI
+    GUI=1
+else
+    # If not, don't the CLI
+    GUI=0
+fi
+NR=true GUI=$GUI /data/adb/modules/fontrevival/tools/bash /data/adb/modules/fontrevival/tools/fontmanager

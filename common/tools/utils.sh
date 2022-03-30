@@ -259,29 +259,6 @@ set_file_prop() {
   fi
 }
 
-# https://github.com/fearside/ProgressBar
-# ProgressBar <progress> <total>
-ProgressBar() {
-  # Determine Screen Size
-  if [[ "$COLUMNS" -le "57" ]]; then
-    local var1=2
-    local var2=20
-  else
-    local var1=4
-    local var2=40
-  fi
-  # Process data
-  local _progress=$(((${1} * 100 / ${2} * 100) / 100))
-  local _done=$(((${_progress} * ${var1}) / 10))
-  local _left=$((${var2} - $_done))
-  # Build progressbar string lengths
-  local _done=$(printf "%${_done}s")
-  local _left=$(printf "%${_left}s")
-
-  # Build progressbar strings and print the ProgressBar line
-  printf "\rProgress : ${BGBL}|${N}${_done// /${BGBL}$loadBar${N}}${_left// / }${BGBL}|${N} ${_progress}%%"
-}
-
 #https://github.com/fearside/SimpleProgressSpinner
 # Spinner <message>
 Spinner() {

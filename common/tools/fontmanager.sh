@@ -133,7 +133,7 @@ font_select() {
             menu_set
             return
         else
-            O_S=$(/data/adb/magisk/busybox sha256sum "$RESULTE" | sed "s/\ \/.*//" | tr -d '[:space:]')
+            O_S=$(/data/adb/magisk/busybox sha256sum "$RESULTF" | sed "s/\ \/.*//" | tr -d '[:space:]')
             getChecksum 'fonts' "$choice" 'zip'
             T_S=$(echo "$response" | tr -d '[:space:]')
             if [ "$T_S" != "$O_S" ]; then

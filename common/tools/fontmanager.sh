@@ -423,10 +423,10 @@ updateCheck() {
     updateChecker 'self'
     newVersion=$response
     if test "$(grep 'versionCode=' "$MODDIR"/module.prop | sed 's/versionCode=//')" -lt "$newVersion"; then
-        echo -e "${Bl} Module update found! Please download the latest update manually, and flash in magisk manager.${N}"
+        echo -e "${Bl} Module update found! Please download the latest update manually, and flash in magisk manager or FoxMMM.${N}"
         echo -e "${Bl} Attempting to launch downloads page...${N}"
         sleep 2
-        am start -a android.intent.action.VIEW -d "https://www.androidacy.com/downloads/?f=fmanager%20update&view=%2540Magisk-Modules%2540Font_Manager" &>/dev/null
+        am start -a android.intent.action.VIEW -d "https://www.androidacy.com/modules-repo/?utm_source=fontmanager&utm_medium=repo&utm_campaign=update_module#fontrevival" &>/dev/null
         echo -e "${Bl} Exiting now.!${N}"
         exit 1
     else

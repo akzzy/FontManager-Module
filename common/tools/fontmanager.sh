@@ -338,23 +338,53 @@ open_link() {
     menu_set
 }
 custom_font() {
-    # TODO: Add support for custom fonts
     log 'INFO' "Received request to install custom font"
     do_banner
+    echo -e "${R} Custom fonts selected. Please note, we do not offer font patching, so please verify that the font you are installing works correctly on your device.${N}"
+    echo -e "${R} This feature is currently in beta and may not work properly.${N}"
+    echo -e "${Bl} Press enter to continue: ${N}"
+    read -r a
     local custFontLoc="$EXT_DATA/custom_fonts"
+    FONT_CUST=false
+    EMOJI_CUST=false
     if test -d "$custFontLoc"; then
-        echo -e "${R} ⚠ ${N}"
-        echo -e "${R} ⚠ Custom fonts are not supported yet.${N}"
-        echo -e "${R} ⚠ Please contact the developer if you want to contribute.${N}"
-        echo -e "${R} ⚠ ${N}"
-        sleep 4
-        menu_set
+        # Test for Bold, Regular, Italic
+        if test -f "$custFontLoc/Bold.ttf" && test -f "$custFontLoc/Regular.ttf" && test -f "$custFontLoc/Italic.ttf"; then
+            FONT_CUST=true
+            echo -e "${Bl} Using custom font${N}"
+            cp -f "$custFontLoc/Bold.ttf" "$MODDIR"/system/fonts/Roboto-Bold.ttf
+            cp -f "$custFontLoc/Regular.ttf" "$MODDIR"/system/fonts/Roboto-Regular.ttf
+            cp -f "$custFontLoc/Italic.ttf" "$MODDIR"/system/fonts/Roboto-Italic.ttf
+            cp -f "$custFontLoc/Italic.ttf" "$MODDIR"/system/product/fonts/Roboto-BoldItalic.ttf
+            echo -e "${Bl} Custom font applied! Please reboot.${N}"
+            echo -e "${Bl} ⚠ Please note that this is a custom font, and not supported by Androidacy. We make no guarantees that it will work with your device. If you want tried and tested fonts, please select one of the ones we provide.${N}"
+            echo 'custom' >"$MODDIR"/cfont
+            sleep 2
+        fi
+        # Same but for Emoji.ttf
+        if test -f "$custFontLoc/Emoji.ttf"; then
+            EMOJI_CUST=true
+            echo -e "${Bl} Using custom emoji${N}"
+            cp -f "$custFontLoc/Emoji.ttf" "$MODDIR"/system/fonts/NotoColorEmoji.ttf
+            echo -e "${Bl} Custom emoji applied! Please reboot.${N}"
+            echo -e "${Bl} ⚠ Please note that this is a custom emoji, and not supported by Androidacy. We make no guarantees that it will work with your device. If you want tried and tested fonts, please select one of the ones we provide.${N}"
+            echo 'custom' >"$MODDIR"/cemoji
+            sleep 2
+        fi
+        if ! $FONT_CUST && ! $EMOJI_CUST; then
+            echo -e "${R} ⚠ ${N}"
+            echo -e "${R} ⚠ No custom font or emoji found${N}"
+            echo -e "${R} ⚠ Please try again${N}"
+            sleep 2
+            menu_set
+        fi
     else
         mkdir -p "$custFontLoc"
         echo -e "${R} ⚠ ${N}"
-        echo -e "${R} ⚠ Custom fonts are not supported yet.${N}"
-        echo -e "${R} ⚠ Please contact the developer if you want to contribute.${N}"
-        echo -e "${R} ⚠ ${N}"
+        echo -e "${R} ⚠ Created custom font directory${N}"
+        echo -e "${R} ⚠ Copy your custom font files to this directory: $custFontLoc${N}"
+        echo -e "${R} ⚠ For fonts, you need to have Bold, Regular, Italic ttf files, each named as such: Bold.ttf, Regular.ttf, Italic.ttf${N}"
+        echo -e "${R} ⚠ For Emoji, you need to have Emoji.ttf, each named as such: Emoji.ttf${N}"
         sleep 4
         menu_set
     fi

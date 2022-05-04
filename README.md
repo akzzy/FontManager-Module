@@ -2,9 +2,14 @@
 
 ## **The best way to get fonts and emojis just how you want them!**
 
-![Logo](https://www.androidacy.com/wp-content/uploads/rsz_cropped-adobe_post_20210202_00133408277657334196729-1024x576-1.png)
+Be sure to check out [https://www.androidacy.com](https://www.androidacy.com/?f=fm_rdme)
 
-### Be sure to check out [https://www.androidacy.com](https://www.androidacy.com/?f=fm_rdme)
+## Support
+
+[![Telegram Group](https://img.shields.io/endpoint?color=neon&style=flat&url=https%3A%2F%2Ftg.sumanjay.workers.dev%2Fandroidacy_discussions)](https://telegram.dog/androidacy_discussions)
+[![Telegram Channel](https://img.shields.io/endpoint?color=neon&style=flat&url=https%3A%2F%2Ftg.sumanjay.workers.dev%2Fandroidacy)](https://telegram.dog/androidacy)
+
+## What exactly is Font Manager? 
 
 Forget your Joypixels module, and your Google Sans module. Forget your Open Sans and your iOS emoji module. Forget whatever 2013 tools still support systemfully edting fonts. Forget them all, because you have the real font and emoji mangement power in your hands.
 
@@ -27,9 +32,15 @@ To use, all you need to do is run `su -c manage_fonts` in a terminal such as Ter
 - Revert all font and emoji changes on demand
 - Update the lists of fonts and emojis automatically.
 - Reboot device on-demand to apply changes
-- **Custom font patching and offline font install currently are not supported**
+- **Font patching and offline font install currently are not supported**
 
 All the available fonts are listed in the module, there's over 200 fonts and several emojis to choose from!
+
+## Compatibility
+
+Most ROMs Nougat to 12.1 should work. Make sure to select Roboto or the default if the ROM offers font customization. 
+
+Some ROMs now use variable fonts. For the time being, Font Manager cannot support those ROMs. We're working on it though! 
 
 ## Credits
 

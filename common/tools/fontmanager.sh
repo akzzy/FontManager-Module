@@ -121,7 +121,7 @@ font_select() {
     fi
     do_banner
     downloadFile 'fonts' "$choice" 'zip' "$EXT_DATA/font/$choice.zip" && sleep 0.75 &
-    e_spinner "${Bl} Downloading $choice font "
+    echo -e "${Bl} Downloading $choice font..."
     sleep 2
     in_f() {
         RESULTF="$EXT_DATA"/font/"$choice".zip
@@ -132,21 +132,12 @@ font_select() {
             sleep 3
             menu_set
             return
-        else
-            O_S=$(/data/adb/magisk/busybox sha256sum "$RESULTF" | sed "s/\ \/.*//" | tr -d '[:space:]')
-            getChecksum 'fonts' "$choice" 'zip'
-            T_S=$(echo "$response" | tr -d '[:space:]')
-            if [ "$T_S" != "$O_S" ]; then
-                echo -e "${R}Downloaded file corrupt. The font was not installed.${N}"
-                echo -e "${R}Returning to main menu in three seconds${N}"
-                pkill -f curl
-                sleep 3
-                menu_set
-            fi
         fi
         unzip -o "$RESULTF" -d "$MODDIR/system/fonts" &>/dev/null
         # Workaround for android 12, experimental
         rm -fr /data/fonts/*
+        chmod 444 /data/fonts
+        chattr +i /data/fonts
         set_perm_recursive 644 root root 0 "$MODDIR"/system/fonts/*
         if test -d /product/fonts; then
             mkdir -p "$MODDIR"/system/product/fonts
@@ -162,7 +153,7 @@ font_select() {
         sleep 1.5
     }
     in_f &
-    e_spinner "${Bl} Installing $choice font "
+    echo -e "${Bl} Installing $choice font..."
     echo -e " "
     echo -e "${Bl} Install success!${N}"
     sleep 2
@@ -223,7 +214,7 @@ emoji_select() {
     fi
     do_banner
     downloadFile 'emojis' "$choice" 'zip' "$EXT_DATA/emoji/$choice.zip" && sleep 0.75 &
-    e_spinner "${Bl} Downloading $choice emoji set "
+    echo -e "${Bl} Downloading $choice emoji set...."
     sleep 2
     in_e() {
         RESULTE="$EXT_DATA"/emoji/"$choice".zip
@@ -234,18 +225,6 @@ emoji_select() {
             sleep 3
             menu_set
             return
-        else
-            O_S=$(/data/adb/magisk/busybox sha256sum "$RESULTE" | sed "s/\ \/.*//" | tr -d '[:space:]')
-            getChecksum 'emojis' "$choice" 'zip'
-            T_S=$(echo "$response" | tr -d '[:space:]')
-            if [ "$T_S" != "$O_S" ]; then
-                echo -e "${R} Downloaded file corrupt. The emoji set was not installed.${N}"
-                echo -e "${R} Returning to main  menu in three seconds ${N}"
-                pkill -f curl
-                sleep 3
-                menu_set
-                return
-            fi
         fi
         unzip -o "$RESULTE" -d "$MODDIR/system/fonts" &>/dev/null
         set_perm_recursive 644 root root 0 "$MODDIR"/system/fonts/*
@@ -270,7 +249,7 @@ emoji_select() {
         sleep 1.5
     }
     in_e &
-    e_spinner "${Bl} Installing $choice emoji set "
+    echo -e "${Bl} Installing $choice emoji set..."
     echo -e " "
     echo -e "${Bl} Install success!${N}"
     sleep 2
@@ -321,9 +300,9 @@ rever_st() {
         sleep 1.5
     }
     r_s &
-    e_spinner "${Bl} Reverting to stock fonts ${N}"
+    echo -i "${Bl} Reverting to stock fonts ${N}..."
     echo -e "\n${Bl} Stock fonts applied! Please reboot.${N}"
-    sleep 2
+    sleep 1
     reboot_fn
 }
 open_link() {

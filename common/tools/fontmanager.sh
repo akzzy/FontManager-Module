@@ -120,15 +120,15 @@ font_select() {
         font_select
     fi
     do_banner
-    downloadFile 'fonts' "$choice" 'zip' "$EXT_DATA/font/$choice.zip" && sleep 0.75 &
     echo -e "${Bl} Downloading $choice font..."
-    sleep 2
+    downloadFile 'fonts' "$choice" 'zip' "$EXT_DATA/font/$choice.zip"
+    sleep 1
     in_f() {
         RESULTF="$EXT_DATA"/font/"$choice".zip
         if [ ! -f "$RESULTF" ]; then
             echo -e "${R} Downloaded file not found. The font was not installed.${N}"
             echo -e "${R} Returning to main menu in three seconds${N}"
-            pkill -f wget
+            pkill -f curl
             sleep 3
             menu_set
             return
@@ -213,9 +213,9 @@ emoji_select() {
         font_select
     fi
     do_banner
-    downloadFile 'emojis' "$choice" 'zip' "$EXT_DATA/emoji/$choice.zip" && sleep 0.75 &
     echo -e "${Bl} Downloading $choice emoji set...."
-    sleep 2
+    downloadFile 'emojis' "$choice" 'zip' "$EXT_DATA/emoji/$choice.zip"
+    sleep 1
     in_e() {
         RESULTE="$EXT_DATA"/emoji/"$choice".zip
         if [ ! -f "$RESULTE" ]; then

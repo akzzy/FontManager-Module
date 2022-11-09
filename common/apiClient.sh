@@ -271,24 +271,6 @@ getChecksum() {
 # PLEASE NOTE: Do NOT upload potentially sensitive data to the log server. We don't need GDPR up our you-know-what.
 # That means no app info, no API keys, no passwords, no device info, no anything that could be used to identify you.
 logUploader() {
-    api_log 'INFO' "logUploader called with parameter: $1"
-    if test "$#" -ne 1; then
-        api_log 'ERROR' 'Caught error in logUploader: wrong arguments passed'
-        echo "Illegal number of parameters passed. Expected one, got $#"
-        abort
-        if ! $__init_complete; then
-            api_log 'ERROR' 'Make sure you initialize the api client via initClient before trying to call API methods'
-            echo "Tried to call logUploader without first initializing the API client!"
-            abort
-        fi
-    else
-        local log=$1
-        local app=$MODULE_CODENAME
-        curl -kLsS -A "$API_UA" -b "USER=$api_credentials" -H "Accept-Language: $API_LANG" -F "log=@$1" "$__api_url/logs/upload" &>/dev/null
-        if test $? -ne 0; then
-            handleError
-            logUploader "$log"
-        fi
-        sleep $sleep
-    fi
+    # This has actually done nothing server side for awhile and is causing issues. No-op it
+    true
 }

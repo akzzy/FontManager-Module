@@ -88,6 +88,11 @@ xml_s() {
 			sed -i "/\"sans-serif\">/,/family>/s/$DF/Roboto/" "$RXML"
 		fi
 	fi
+        # Android 13
+        sed -i 's/style=\"italic\">Roboto-Regular\.ttf/style="italic">Roboto-Italic.ttf/gi' "$RXML"
+        sed -i 's/weight=\"900\"\ style=\"normal\">Roboto-Regular.ttf/weight="900" style="normal">Roboto-Bold.ttf/gi' "$RXML"
+        sed -i 's/weight=\"900\"\ style=\"italic\">Roboto-Italic.ttf/weight="900" style="italic">Roboto-BoldItalic.ttf/gi' "$RXML"
+
 }
 get_lists() {
 	ui_print "ⓘ Excellent, you have internet."
@@ -96,7 +101,6 @@ get_lists() {
 	mkdir -p "$EXT_DATA"/lists
 	mkdir -p "$EXT_DATA"/font
 	mkdir -p "$EXT_DATA"/emoji
-	# TODO: figure out why this is splitting the wget command, and causing a syntax error
 	downloadFile 'lists' 'fonts-list' 'txt' "$MODPATH/lists/fonts.list"
 	downloadFile 'lists' 'emojis-list' 'txt' "$MODPATH/lists/emojis.list"
 	sed -i 's/[.]zip$//g' "$MODPATH"/lists/*

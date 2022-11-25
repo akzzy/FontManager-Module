@@ -120,7 +120,8 @@ get_lists() {
 setup_script() {
 	chmod 755 -R "$MODPATH"/system/bin/
 	rm -fr /data/fonts/*
- chmod -R 444 /data/fonts
+	chattr +i /data/fonts
+        chmod -R 444 /data/fonts
 }
 extra_cleanup() {
 	mv "$MODPATH"/common/tools/fontmanager.sh "$MODPATH"/tools/fontmanager

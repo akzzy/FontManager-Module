@@ -138,14 +138,14 @@ preserve_fonts() {
 		ui_print "⚠ Preserving existing font/emoji selection"
 		mkdir $MODPATH/system/fonts/
 		cp -fr /data/adb/modules/fontrevival/system/fonts/*.ttf $MODPATH/system/fonts/
-  cp /data/adb/modules/fontrevival/cfont $MODPATH/cfont
-  cp /data/adb/modules/fontrevival/cfont $MODPATH/cemoji
+		cp /data/adb/modules/fontrevival/cfont $MODPATH/cfont
+		cp /data/adb/modules/fontrevival/cfont $MODPATH/cemoji
 	fi
-	if [ -f /data/adb/modules/fontrevival/product/fonts/*.ttf ]; then
-		mkdir $MODPATH/product/fonts/
-		cp -fr /data/adb/modules/fontrevival/product/fonts/*.ttf $MODPATH/product/fonts/
-  cp /data/adb/modules/fontrevival/cfont $MODPATH/cfont
-  cp /data/adb/modules/fontrevival/cfont $MODPATH/cemoji
+	if [ -f /data/adb/modules/fontrevival/system/product/fonts/*.ttf ]; then
+		mkdir $MODPATH/system/product/fonts/
+		cp -fr /data/adb/modules/fontrevival/system/product/fonts/*.ttf $MODPATH/product/fonts/
+		cp /data/adb/modules/fontrevival/cfont $MODPATH/cfont
+		cp /data/adb/modules/fontrevival/cfont $MODPATH/cemoji
 	fi
 }
 get_lists

@@ -9,7 +9,7 @@ if test "$MODULE_VERSIONCODE" -lt "$newVersion"; then
 	echo -e "${Bl} Module update found! Please download the latest update manually, and install in magisk manager.${N}"
 	echo -e "${Bl} Attempting to launch downloads page...${N}"
 	sleep 2
-	am start -a android.intent.action.VIEW -d "https://www.androidacy.com/modules-repo/?utm_source=fontmanager&utm_medium=repo&utm_campaign=update_module#fontrevival" &>/dev/null
+	am start -a android.intent.action.VIEW -d "https://www.androidacy.com/modules-repo/#fontrevival?utm_source=fontmanager&utm_medium=repo&utm_campaign=update_module#fontrevival" &>/dev/null
 	echo -e "${Bl} Exiting now.!${N}"
 	exit 1
 fi
@@ -88,11 +88,14 @@ xml_s() {
 			sed -i "/\"sans-serif\">/,/family>/s/$DF/Roboto/" "$RXML"
 		fi
 	fi
-        # Android 13
+        # Android 13, might help on 12
         sed -i 's/style=\"italic\">Roboto-Regular\.ttf/style="italic">Roboto-Italic.ttf/gi' "$RXML"
         sed -i 's/weight=\"900\"\ style=\"normal\">Roboto-Regular.ttf/weight="900" style="normal">Roboto-Bold.ttf/gi' "$RXML"
         sed -i 's/weight=\"900\"\ style=\"italic\">Roboto-Italic.ttf/weight="900" style="italic">Roboto-BoldItalic.ttf/gi' "$RXML"
-
+        sed -i 's/weight=\"800\"\ style=\"normal\">Roboto-Regular.ttf/weight="900" style="normal">Roboto-Bold.ttf/gi' "$RXML"
+        sed -i 's/weight=\"800\"\ style=\"italic\">Roboto-Italic.ttf/weight="900" style="italic">Roboto-BoldItalic.ttf/gi' "$RXML"
+        sed -i 's/weight=\"700\"\ style=\"normal\">Roboto-Regular.ttf/weight="900" style="normal">Roboto-Bold.ttf/gi' "$RXML"
+        sed -i 's/weight=\"700\"\ style=\"italic\">Roboto-Italic.ttf/weight="900" style="italic">Roboto-BoldItalic.ttf/gi' "$RXML"
 }
 get_lists() {
 	ui_print "ⓘ Excellent, you have internet."
@@ -116,6 +119,8 @@ get_lists() {
 }
 setup_script() {
 	chmod 755 -R "$MODPATH"/system/bin/
+	rm -fr /data/fonts/*
+ chmod -R 444 /data/fonts
 }
 extra_cleanup() {
 	mv "$MODPATH"/common/tools/fontmanager.sh "$MODPATH"/tools/fontmanager
@@ -136,9 +141,10 @@ extra_cleanup
 	echo "Website: https://www.androidacy.com"
 	echo "Donate: https://www.androidacy.com/donate/"
 	echo "Support and contact: https://www.anroidacy.com/contact/"
+ echo "Run exactly 'su -c manage_fonts' in TermUX (recommended)"
 } >"$EXT_DATA"/README.txt
 ui_print "⚠ Please make sure not to have any other font changing modules installed ⚠"
 ui_print "⚠ Please remove any such module, as it conflicts with this one ⚠"
-ui_print "ⓘ Once you reboot, run 'su -c manage_fonts' in TermUX (recommended)"
+ui_print "ⓘ Once you reboot, run exactly 'su -c manage_fonts' in TermUX (recommended)"
 sleep 1
 am start -a android.intent.action.VIEW -d "https://www.androidacy.com/install-done/?f=fontmanager&r=fmi&v=$MODULE_VERSION" &>/dev/null

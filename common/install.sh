@@ -133,9 +133,25 @@ extra_cleanup() {
 	rm -rf "$MODPATH"/*.md
 	rm -rf "$MODPATH"/LICENSE
 }
+preserve_fonts() {
+	if [ -f /data/adb/modules/fontrevival/system/fonts/*.ttf ]; then
+		ui_print "⚠ Preserving existing font/emoji selection"
+		mkdir $MODPATH/system/fonts/
+		cp -fr /data/adb/modules/fontrevival/system/fonts/*.ttf $MODPATH/system/fonts/
+  cp /data/adb/modules/fontrevival/cfont $MODPATH/cfont
+  cp /data/adb/modules/fontrevival/cfont $MODPATH/cemoji
+	fi
+	if [ -f /data/adb/modules/fontrevival/product/fonts/*.ttf ]; then
+		mkdir $MODPATH/product/fonts/
+		cp -fr /data/adb/modules/fontrevival/product/fonts/*.ttf $MODPATH/product/fonts/
+  cp /data/adb/modules/fontrevival/cfont $MODPATH/cfont
+  cp /data/adb/modules/fontrevival/cfont $MODPATH/cemoji
+	fi
+}
 get_lists
 setup_script
 extra_cleanup
+preserve_fonts
 {
 	echo "Here's some useful links:"
 	echo " "

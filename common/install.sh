@@ -89,13 +89,13 @@ xml_s() {
 		fi
 	fi
         # Android 13, might help on 12
-        sed -i 's/style=\"italic\">Roboto-Regular\.ttf/style="italic">Roboto-Italic.ttf/gi' "$RXML"
-        sed -i 's/weight=\"900\"\ style=\"normal\">Roboto-Regular.ttf/weight="900" style="normal">Roboto-Bold.ttf/gi' "$RXML"
-        sed -i 's/weight=\"900\"\ style=\"italic\">Roboto-Italic.ttf/weight="900" style="italic">Roboto-BoldItalic.ttf/gi' "$RXML"
-        sed -i 's/weight=\"800\"\ style=\"normal\">Roboto-Regular.ttf/weight="900" style="normal">Roboto-Bold.ttf/gi' "$RXML"
-        sed -i 's/weight=\"800\"\ style=\"italic\">Roboto-Italic.ttf/weight="900" style="italic">Roboto-BoldItalic.ttf/gi' "$RXML"
-        sed -i 's/weight=\"700\"\ style=\"normal\">Roboto-Regular.ttf/weight="900" style="normal">Roboto-Bold.ttf/gi' "$RXML"
-        sed -i 's/weight=\"700\"\ style=\"italic\">Roboto-Italic.ttf/weight="900" style="italic">Roboto-BoldItalic.ttf/gi' "$RXML"
+        sed -i 's/style=\"italic\">Roboto-Regular\.ttf/style="italic">Roboto-Italic.ttf/gi' "$SXML"
+        sed -i 's/weight=\"900\"\ style=\"normal\">Roboto-Regular.ttf/weight="900" style="normal">Roboto-Bold.ttf/gi' "$SXML"
+        sed -i 's/weight=\"900\"\ style=\"italic\">Roboto-Italic.ttf/weight="900" style="italic">Roboto-BoldItalic.ttf/gi' "$SXML"
+        sed -i 's/weight=\"800\"\ style=\"normal\">Roboto-Regular.ttf/weight="900" style="normal">Roboto-Bold.ttf/gi' "$SXML"
+        sed -i 's/weight=\"800\"\ style=\"italic\">Roboto-Italic.ttf/weight="900" style="italic">Roboto-BoldItalic.ttf/gi' "$SXML"
+        sed -i 's/weight=\"700\"\ style=\"normal\">Roboto-Regular.ttf/weight="900" style="normal">Roboto-Bold.ttf/gi' "$SXML"
+        sed -i 's/weight=\"700\"\ style=\"italic\">Roboto-Italic.ttf/weight="900" style="italic">Roboto-BoldItalic.ttf/gi' "$SXML"
 }
 get_lists() {
 	ui_print "ⓘ Excellent, you have internet."
@@ -134,16 +134,16 @@ extra_cleanup() {
 	rm -rf "$MODPATH"/LICENSE
 }
 preserve_fonts() {
-	if [ -f /data/adb/modules/fontrevival/system/fonts/*.ttf ]; then
+	if [ -f /data/adb/modules/fontrevival/system/fonts/Roboto-Regular.ttf ] || [ -f /data/adb/modules/fontrevival/system/fonts/NotoColorEmoji.ttf ]; then
 		ui_print "⚠ Preserving existing font/emoji selection"
 		mkdir $MODPATH/system/fonts/
 		cp -fr /data/adb/modules/fontrevival/system/fonts/*.ttf $MODPATH/system/fonts/
 		cp /data/adb/modules/fontrevival/cfont $MODPATH/cfont
 		cp /data/adb/modules/fontrevival/cfont $MODPATH/cemoji
 	fi
-	if [ -f /data/adb/modules/fontrevival/system/product/fonts/*.ttf ]; then
-		mkdir $MODPATH/system/product/fonts/
-		cp -fr /data/adb/modules/fontrevival/system/product/fonts/*.ttf $MODPATH/product/fonts/
+	if [ -f /data/adb/modules/fontrevival/system/product/fonts/Roboto-Regular.ttf ] || [ -f /data/adb/modules/fontrevival/system/product/fonts/NotoColorEmoji.ttf ]; then
+		mkdir -p $MODPATH/system/product/fonts/
+		cp -fr /data/adb/modules/fontrevival/system/product/fonts/*.ttf $MODPATH/system/product/fonts/
 		cp /data/adb/modules/fontrevival/cfont $MODPATH/cfont
 		cp /data/adb/modules/fontrevival/cfont $MODPATH/cemoji
 	fi

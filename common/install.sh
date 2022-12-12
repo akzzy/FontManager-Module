@@ -136,14 +136,16 @@ extra_cleanup() {
 preserve_fonts() {
 	if [ -f /data/adb/modules/fontrevival/system/fonts/Roboto-Regular.ttf ] || [ -f /data/adb/modules/fontrevival/system/fonts/NotoColorEmoji.ttf ]; then
 		ui_print "⚠ Preserving existing font/emoji selection"
-		mkdir $MODPATH/system/fonts/
+		mkdir -p $MODPATH/system/fonts/
 		cp -fr /data/adb/modules/fontrevival/system/fonts/*.ttf $MODPATH/system/fonts/
+    set_perm_recursive 644 root root 0 "$MODDIR"/system/fonts/*
 		cp /data/adb/modules/fontrevival/cfont $MODPATH/cfont
 		cp /data/adb/modules/fontrevival/cfont $MODPATH/cemoji
 	fi
 	if [ -f /data/adb/modules/fontrevival/system/product/fonts/Roboto-Regular.ttf ] || [ -f /data/adb/modules/fontrevival/system/product/fonts/NotoColorEmoji.ttf ]; then
 		mkdir -p $MODPATH/system/product/fonts/
 		cp -fr /data/adb/modules/fontrevival/system/product/fonts/*.ttf $MODPATH/system/product/fonts/
+    set_perm_recursive 644 root root 0 "$MODDIR"/system/product/fonts/*
 		cp /data/adb/modules/fontrevival/cfont $MODPATH/cfont
 		cp /data/adb/modules/fontrevival/cfont $MODPATH/cemoji
 	fi

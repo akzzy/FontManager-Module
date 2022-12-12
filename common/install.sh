@@ -92,10 +92,10 @@ xml_s() {
         sed -i 's/style=\"italic\">Roboto-Regular\.ttf/style="italic">Roboto-Italic.ttf/gi' "$SXML"
         sed -i 's/weight=\"900\"\ style=\"normal\">Roboto-Regular.ttf/weight="900" style="normal">Roboto-Bold.ttf/gi' "$SXML"
         sed -i 's/weight=\"900\"\ style=\"italic\">Roboto-Italic.ttf/weight="900" style="italic">Roboto-BoldItalic.ttf/gi' "$SXML"
-        sed -i 's/weight=\"800\"\ style=\"normal\">Roboto-Regular.ttf/weight="900" style="normal">Roboto-Bold.ttf/gi' "$SXML"
-        sed -i 's/weight=\"800\"\ style=\"italic\">Roboto-Italic.ttf/weight="900" style="italic">Roboto-BoldItalic.ttf/gi' "$SXML"
-        sed -i 's/weight=\"700\"\ style=\"normal\">Roboto-Regular.ttf/weight="900" style="normal">Roboto-Bold.ttf/gi' "$SXML"
-        sed -i 's/weight=\"700\"\ style=\"italic\">Roboto-Italic.ttf/weight="900" style="italic">Roboto-BoldItalic.ttf/gi' "$SXML"
+        sed -i 's/weight=\"800\"\ style=\"normal\">Roboto-Regular.ttf/weight="800" style="normal">Roboto-Bold.ttf/gi' "$SXML"
+        sed -i 's/weight=\"800\"\ style=\"italic\">Roboto-Italic.ttf/weight="800" style="italic">Roboto-BoldItalic.ttf/gi' "$SXML"
+        sed -i 's/weight=\"700\"\ style=\"normal\">Roboto-Regular.ttf/weight="700" style="normal">Roboto-Bold.ttf/gi' "$SXML"
+        sed -i 's/weight=\"700\"\ style=\"italic\">Roboto-Italic.ttf/weight="700" style="italic">Roboto-BoldItalic.ttf/gi' "$SXML"
 }
 get_lists() {
 	ui_print "ⓘ Excellent, you have internet."

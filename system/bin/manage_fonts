@@ -1,4 +1,4 @@
-#!/data/adb/magisk/busybox ash
+#!/data/adb/ksu/bin/busybox ash
 # See if --gui is specified
 if [ "$1" = "--gui" ]; then
     # If so, run the GUI

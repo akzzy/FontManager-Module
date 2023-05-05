@@ -122,7 +122,7 @@ set_busybox() {
   fi
 }
 _busybox=true
-_bb=/data/adb/magisk/busybox
+_bb=/data/adb/ksu/bin/busybox
 if ! set_busybox $_bb; then
   it_failed 1
 fi
